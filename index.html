@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan Mirakl Chile</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: encabezado con cifras clave → supuestos y controles → carta Gantt por etapas → riesgos y supuestos */
+:root{
+  --bg:#f6f7fa; --surface:#ffffff; --fg:#17213a; --muted:#5b6478; --line:#dfe3ec; --grid:#eceff5;
+  --navy:#1f3864; --navy-soft:#e6ebf5;
+  --dev:#3f8f5a; --dev-soft:#e2efda;
+  --maybe:#c4861d; --maybe-soft:#fbefd6;
+  --cond:#7a5bb5; --cond-soft:#efe9f9;
+  --done:#9aa3b5;
+  --font-display:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10141f; --surface:#171c2a; --fg:#e7eaf2; --muted:#a0a8bb; --line:#2a3145; --grid:#20263a;
+  --navy:#8fa9e0; --navy-soft:#1e2944; --dev:#6cc28a; --dev-soft:#1b3326; --maybe:#e5aa48; --maybe-soft:#3a2d14;
+  --cond:#b39be6; --cond-soft:#2c2442; --done:#5f6880; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141f; --surface:#171c2a; --fg:#e7eaf2; --muted:#a0a8bb; --line:#2a3145; --grid:#20263a;
+  --navy:#8fa9e0; --navy-soft:#1e2944; --dev:#6cc28a; --dev-soft:#1b3326; --maybe:#e5aa48; --maybe-soft:#3a2d14;
+  --cond:#b39be6; --cond-soft:#2c2442; --done:#5f6880; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+header{display:grid;gap:10px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--font-display);font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}
+.lead{color:var(--muted);font-size:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:2px}
+.kpi b{font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{color:var(--muted);font-size:13px}
+.kpi.main{background:var(--navy);border-color:var(--navy)}
+.kpi.main b,.kpi.main span{color:var(--surface)}
+.controls{display:flex;flex-wrap:wrap;gap:18px;align-items:end;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.controls label{display:grid;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+.controls input,.controls select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+.controls input:focus-visible,.controls select:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.rule{font-family:var(--font-mono);font-size:13px;color:var(--fg);background:var(--navy-soft);border-radius:6px;padding:7px 10px}
+.callout{max-width:none;background:var(--maybe-soft);border:1px solid var(--maybe);border-radius:8px;padding:12px 16px;font-size:14.5px}
+.callout b{color:var(--maybe)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.gantt-box{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:min(78vh,900px);overscroll-behavior:contain}
+.gantt-box:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.g-label{position:sticky;left:0;z-index:1;background:var(--surface)}
+.g-head.g-label{z-index:3}
+.g-stage strong,.g-stage span{position:sticky;left:12px}
+.gantt{min-width:900px;display:grid;grid-template-columns:330px 1fr}
+.g-head{position:sticky;top:0;background:var(--surface);z-index:2;border-bottom:1px solid var(--line)}
+.g-label{padding:7px 12px;border-bottom:1px solid var(--grid);display:grid;gap:1px;min-width:0}
+.g-label .k{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.g-label .n{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-label .meta{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.g-track{position:relative;border-bottom:1px solid var(--grid);border-left:1px solid var(--line);min-height:52px}
+.g-stage{grid-column:1/-1;padding:12px 12px 8px;background:var(--bg);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+.g-stage strong{font-size:14px}
+.g-stage span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.weeks{position:relative;height:44px;border-left:1px solid var(--line)}
+.wk{position:absolute;top:0;bottom:0;border-left:1px solid var(--grid);padding:6px 6px 0;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.wk b{display:block;color:var(--fg);font-weight:600;font-size:12px}
+.gridline{position:absolute;top:0;bottom:0;border-left:1px solid var(--grid)}
+.bar{position:absolute;top:13px;height:26px;border-radius:5px;display:flex;align-items:center;padding:0 7px;font-size:12px;font-weight:600;color:var(--surface);white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.bar.dev{background:var(--dev)} .bar.maybe{background:var(--maybe)} .bar.core{background:var(--navy)}
+.bar.cond{background:var(--cond-soft);color:var(--cond);border:1.5px dashed var(--cond)}
+.bar[data-tip]{cursor:pointer}
+.bar[data-tip]:hover,.bar[data-tip]:focus-visible{outline:2px solid var(--fg);outline-offset:1px}
+.tip{position:fixed;z-index:20;max-width:300px;background:var(--fg);color:var(--bg);border-radius:6px;padding:8px 11px;font-size:13px;line-height:1.45;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:1px}
+.tag.nat-dev{background:var(--dev-soft);color:var(--dev);margin-left:8px}
+.tag.nat-conf{background:var(--navy-soft);color:var(--navy);margin-left:8px}
+.tag.nat-def{background:var(--grid);color:var(--fg);border:1px solid var(--line);margin-left:8px}
+.nat-table{width:100%;border-collapse:collapse;font-size:14px}
+.nat-table th,.nat-table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.nat-table th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.nat-box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;overflow-x:auto}
+.tag.cond{background:var(--cond-soft);color:var(--cond)} .tag.maybe{background:var(--maybe-soft);color:var(--maybe)} .tag.dev{background:var(--dev-soft);color:var(--dev)}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
+.note.warn{border-left:4px solid var(--maybe)} .note.condn{border-left:4px solid var(--cond)}
+.note ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+.note code,.mono{font-family:var(--font-mono);font-size:12.5px}
+.done-list{font-size:13.5px;color:var(--muted)}
+footer{font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.bar{transition:left .25s ease,width .25s ease}}
+</style>
+
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Marketplace Mirakl · Cruz Verde Chile</div>
+    <h1>Plan de desarrollo del conector y la integración</h1>
+    <p class="lead">Tickets filtrados en la hoja Marketplace: primero se termina el conector (fase 1), después se combinan los 14 hooks que salieron del análisis SCC-1597 y al final los tickets de la fase 2.</p>
+  </header>
+
+  <section class="kpis" aria-label="Resumen">
+    <div class="kpi main"><b id="k-dias">–</b><span>días hábiles de desarrollo</span></div>
+    <div class="kpi"><b id="k-fin">–</b><span>fecha estimada de término</span></div>
+    <div class="kpi"><b id="k-horas">–</b><span>horas de trabajo</span></div>
+    <div class="kpi"><b id="k-sp">–</b><span>story points en el plan</span></div>
+  </section>
+
+  <p class="callout"><b>No incluido:</b> este plan no contempla las correcciones que resulten de la regresión de SFCC en la versión 22.7 (SF-23, PT-06 y PT-07, a cargo de FEMSA). Si la regresión encuentra errores, sus correcciones se estiman y se suman aparte.</p>
+
+  <section class="controls" aria-label="Supuestos del cálculo">
+    <label for="start">Inicio del plan<input type="date" id="start" value="2026-11-20"></label>
+    <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1" selected>1 desarrollador</option><option value="2">2 desarrolladores</option><option value="3">3 desarrolladores</option></select></label>
+    <div class="rule">1 SP = 4 horas · 1 día = 8 horas · 1 SP = medio día</div>
+    <div class="legend">
+      <span><i style="background:var(--navy)"></i>Conector (fase 1)</span>
+      <span><i style="background:var(--dev)"></i>Desarrollo</span>
+      <span><i style="background:var(--maybe)"></i>Puede terminar en desarrollo</span>
+      <span><i style="background:var(--cond-soft);border:1.5px dashed var(--cond)"></i>Condicional, por estimar</span>
+    </div>
+  </section>
+
+  <section class="gantt-box" aria-label="Carta Gantt" tabindex="0">
+    <div class="gantt" id="gantt"></div>
+  </section>
+
+  <section class="nat-box" aria-label="Naturaleza de los tickets de fase 2">
+    <h2>Fase 2: qué tipo de trabajo es cada ticket</h2>
+    <p class="lead">Solo SF-29 es desarrollo seguro. Los demás son hoy de configuración o de definición, y pasan a desarrollo solo si se da la condición indicada.</p>
+    <table class="nat-table">
+      <thead><tr><th>Ticket</th><th>Hoy es</th><th>Qué se hace</th><th>Pasa a desarrollo si…</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mono">SCC-1624</span> SF-29</td><td><span class="tag nat-dev" style="margin:0">Desarrollo</span></td><td>Filtro de productos de sellers en <span class="mono">productFeedHelpers.js</span>, compartido por los 5 sitios.</td><td>Ya es desarrollo.</td></tr>
+        <tr><td><span class="mono">SCC-1618</span> PT-10</td><td><span class="tag nat-conf" style="margin:0">Configuración</span></td><td>Configurar con Kognivera el catálogo <span class="mono">masterCatalog_Chile_MKP</span> por categoría y asignarlo al sitio sin activar la venta.</td><td>Se necesita SF-40 (condicional), según lo que entregue MK-21.</td></tr>
+        <tr><td><span class="mono">SCC-1619</span> SF-28b</td><td><span class="tag nat-conf" style="margin:0">Configuración</span></td><td>Verificar en sandbox el prefijo de códigos de sellers y que las bajas solo afecten el catálogo de marketplace.</td><td>El conector no entrega MK-18 a tiempo y hay que hacer un respaldo propio.</td></tr>
+        <tr><td><span class="mono">SCC-1622</span> SF-36a</td><td><span class="tag nat-conf" style="margin:0">Configuración</span></td><td>Alertas de los jobs en Business Manager y runbook de operación.</td><td>Los jobs del conector no dejan log propio y hay que envolverlos con código.</td></tr>
+        <tr><td><span class="mono">SCC-1620</span> SF-15</td><td><span class="tag nat-def" style="margin:0">Definición</span></td><td>Acordar con Catálogo qué categorías y atributos se envían a Mirakl, y dejarlos configurados.</td><td>FEMSA elige la opción B en NG-29 y se crea SF-38 (atributos por categoría).</td></tr>
+        <tr><td><span class="mono">SCC-1623</span> SF-06</td><td><span class="tag nat-def" style="margin:0">Definición</span></td><td>Spike: identificar qué feeds de Chile se reenvían completos y qué ajuste necesita cada uno.</td><td>Algún feed necesita un ajuste aparte del filtro de SF-29.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="notes">
+    <div class="note condn">
+      <h2>SCC-1598 es condicional</h2>
+      <p>SF-19 arma la base del cartucho <span class="mono">app_chile_marketplace</span>, que necesitan los 14 hooks, y revisa los 13 módulos compartidos del conector (por ejemplo <span class="mono">cartHelpers</span> y <span class="mono">checkoutHelpers</span>).</p>
+      <ul>
+        <li>Cada módulo que haya que adaptar se convierte en un ticket nuevo. Hoy no se sabe cuántos son: pueden ser 0 o hasta 13.</li>
+        <li>El plan muestra esos tickets como una barra punteada después de SF-19. No suman días hasta que se estimen.</li>
+        <li>Para empezar los hooks basta con la base del cartucho. No hace falta esperar la revisión completa de los módulos.</li>
+      </ul>
+    </div>
+    <div class="note">
+      <h2>Supuestos del cálculo</h2>
+      <ul>
+        <li>Se planifican solo los tickets abiertos que quedan visibles con los filtros de la hoja. Los cerrados no suman tiempo.</li>
+        <li>Se descuentan fines de semana y feriados de Chile (8 dic, 25 dic y 1 ene).</li>
+        <li>Los tiempos son de desarrollo. No incluyen esperas de terceros (Kognivera, FEMSA, conector) ni la regresión de FEMSA.</li>
+        <li>No incluye correcciones posteriores a la regresión en la versión 22.7. Se estiman cuando FEMSA entregue sus resultados.</li>
+        <li>SF-14c (SCC-1616) y SF-43 (SCC-1621) quedaron fuera del filtro, pero PT-10, SF-06 y SF-36a dependen de ellos. Se asume que estarán listos cuando empiece la fase 2.</li>
+        <li>Con 2 o 3 desarrolladores, la fase 2 sigue empezando cuando termina la fase 1. Lo que se acorta es el tiempo de los hooks y de la fase 2.</li>
+      </ul>
+    </div>
+  </section>
+
+  <p class="done-list" id="done"></p>
+  <div class="tip" id="tip" role="tooltip" hidden></div>
+  <footer>Fuente: hoja Marketplace de «PROYECTOS PO CHILE.xlsx» (filtros aplicados) y tickets SCC en Jira. Análisis de hooks: página de Confluence de SCC-1597.</footer>
+</div>
+
+<script>
+// kind: core = fase 1 conector, dev = desarrollo, maybe = puede terminar en desarrollo
+const STAGES=[
+ {id:'f1',name:'Etapa 1 · Terminar el conector (fase 1)'},
+ {id:'hk',name:'Etapa 2 · Hooks combinados del conector (origen SCC-1597)'},
+ {id:'f2',name:'Etapa 3 · Fase 2'}
+];
+const T=[
+ {k:'SCC-1598',c:'SF-19',n:'Base de app_chile_marketplace y revisión de los 13 módulos compartidos',sp:4,st:'f1',kind:'core',cond:true,deps:[]},
+ {k:'SCC-1591',c:'SF-20',n:'Credencial propia del conector con permisos mínimos por ambiente',sp:2,st:'f1',kind:'core',deps:[]},
+ {k:'SCC-1586',c:'SF-22',n:'Correo de confirmación y feed de pedidos a Marketing Cloud compatibles con 22.7',sp:4,st:'f1',kind:'core',deps:[]},
+ {k:'SCC-1629',c:'SF-07a',n:'Corregir shippingHelpers: el front lista los métodos de envío',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1630',c:'SF-07b',n:'Combinar el cálculo del carrito (dw.order.calculate)',sp:3,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1631',c:'SF-07c',n:'Agregar producto: la oferta entra al carrito (items.afterPOST)',sp:1,st:'hk',kind:'dev',deps:['SCC-1630']},
+ {k:'SCC-1632',c:'SF-07d',n:'Borrar producto del carrito (item.afterDELETE)',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1633',c:'SF-07e',n:'Dirección de envío (shipping_address.afterPUT)',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1634',c:'SF-07f',n:'Actualizar carrito con c_updatePrices (basket.afterPATCH)',sp:2,st:'hk',kind:'dev',deps:['SCC-1630']},
+ {k:'SCC-1635',c:'SF-07g',n:'Cambiar cantidad (item.afterPATCH)',sp:1,st:'hk',kind:'dev',deps:['SCC-1630']},
+ {k:'SCC-1636',c:'SF-07h',n:'Respuesta del carrito con datos de sellers',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1637',c:'SF-07i',n:'Cálculo del envío sin envío gratis indebido',sp:2,st:'hk',kind:'dev',deps:['SCC-1629']},
+ {k:'SCC-1638',c:'SF-07j',n:'Método de envío con c_marketplaceData',sp:1,st:'hk',kind:'dev',deps:['SCC-1629']},
+ {k:'SCC-1639',c:'SF-07k',n:'Antes de crear el pedido: validación de Mirakl',sp:2,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1640',c:'SF-07l',n:'Después de crear el pedido: envío a Mirakl',sp:1,st:'hk',kind:'dev',deps:['SCC-1639']},
+ {k:'SCC-1641',c:'SF-07m',n:'Ficha de producto con ofertas de sellers',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1642',c:'SF-07n',n:'Búsqueda con ofertas de sellers',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
+ {k:'SCC-1618',c:'PT-10',n:'Configuración de masterCatalog_Chile_MKP por categoría',sp:2,st:'f2',kind:'maybe',nat:'conf',deps:[]},
+ {k:'SCC-1619',c:'SF-28b',n:'Códigos de productos de sellers y bajas acotadas',sp:1,st:'f2',kind:'maybe',nat:'conf',deps:['SCC-1618']},
+ {k:'SCC-1620',c:'SF-15',n:'Datos de categoría y producto que se envían a Mirakl',sp:3,st:'f2',kind:'maybe',nat:'def',deps:['SCC-1618']},
+ {k:'SCC-1623',c:'SF-06',n:'Feeds que se reenvían por el job de ofertas (spike)',sp:2,st:'f2',kind:'maybe',nat:'def',deps:[]},
+ {k:'SCC-1624',c:'SF-29',n:'Filtro isMarketplaceProduct en feeds y jobs',sp:4,st:'f2',kind:'dev',nat:'dev',deps:['SCC-1623']},
+ {k:'SCC-1622',c:'SF-36a',n:'Observabilidad: logs, alertas y runbook',sp:3,st:'f2',kind:'maybe',nat:'conf',deps:[]},
+];
+const NAT={dev:'Desarrollo',conf:'Configuración',def:'Definición'};
+const DONE=['SCC-1584 SF-01','SCC-1587 SF-03','SCC-1592 PT-03a','SCC-1597 SF-07'];
+const HOLI=new Set(['2026-12-08','2026-12-25','2027-01-01','2027-05-01','2027-05-21']);
+const MON=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function workDays(start,count){const out=[];const d=new Date(start+'T12:00:00');while(out.length<count){const w=d.getDay();if(w&&w!==6&&!HOLI.has(iso(d)))out.push(new Date(d));d.setDate(d.getDate()+1)}return out}
+function fmt(d){return d.getDate()+' '+MON[d.getMonth()]}
+const WD=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const MONL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function longDay(d){return WD[d.getDay()]+' '+d.getDate()+' de '+MONL[d.getMonth()]+' de '+d.getFullYear()}
+
+// unidades de medio día (1 SP = 4 h = 1 unidad)
+function schedule(devs){
+  const end={},start={};const free=Array(devs).fill(0);
+  let gateF2=0;
+  for(const st of ['f1','hk','f2']){
+    if(st==='f2')gateF2=Math.max(...T.filter(t=>t.st==='f1').map(t=>end[t.k]));
+    for(const t of T.filter(x=>x.st===st)){
+      let earliest=Math.max(0,...t.deps.map(d=>end[d]));
+      if(st==='f2')earliest=Math.max(earliest,gateF2);
+      let best=0,bs=Infinity;
+      free.forEach((f,i)=>{const s=Math.max(f,earliest);if(s<bs){bs=s;best=i}});
+      start[t.k]=bs;end[t.k]=bs+t.sp;free[best]=end[t.k];t.dev=best+1;
+    }
+  }
+  return {start,end,total:Math.max(...Object.values(end))};
+}
+
+function render(){
+  const devs=+document.getElementById('devs').value;
+  let startDate=document.getElementById('start').value||'2026-11-20';
+  const s=schedule(devs);
+  const totalDays=Math.ceil(s.total/2);
+  const days=workDays(startDate,totalDays+12);
+  const sp=T.reduce((a,t)=>a+t.sp,0);
+  document.getElementById('k-dias').textContent=(s.total/2).toLocaleString('es-CL');
+  document.getElementById('k-horas').textContent=sp*4;
+  document.getElementById('k-sp').textContent=sp;
+  document.getElementById('k-fin').textContent=fmt(days[totalDays-1])+' '+days[totalDays-1].getFullYear();
+  const span=s.total+2; // unidades visibles (margen para la barra condicional)
+  const pct=u=>(u/span*100);
+  const g=document.getElementById('gantt');
+  let h='<div class="g-label g-head" style="justify-content:end"><span class="meta">Ticket · SP · horas · fechas</span></div><div class="g-head"><div class="weeks">';
+  // semanas: cada lunes visible
+  const monSoon=[1,2].some(k=>days[k]&&days[k].getDay()===1);
+  for(let u=0;u<span;u+=2){const d=days[u/2];if(!d)break;if(d.getDay()===1||(u===0&&!monSoon)){h+=`<div class="wk" style="left:${pct(u)}%"><b>Sem. ${fmt(d)}</b>${d.getFullYear()}</div>`}}
+  h+='</div></div>';
+  for(const stg of STAGES){
+    const ts=T.filter(t=>t.st===stg.id);
+    const a=Math.min(...ts.map(t=>s.start[t.k])),b=Math.max(...ts.map(t=>s.end[t.k]));
+    const spS=ts.reduce((x,t)=>x+t.sp,0);
+    let mix='';
+    if(stg.id==='f2'){mix=' · '+['dev','conf','def'].map(n=>{const x=ts.filter(t=>t.nat===n);return `${NAT[n]}: ${x.length} (${x.reduce((a,t)=>a+t.sp,0)*4} h)`}).join(' · ')}
+    h+=`<div class="g-stage"><strong>${stg.name}</strong><span>${spS} SP · ${spS*4} h · ${(spS/2).toLocaleString('es-CL')} días de trabajo · ${fmt(days[Math.floor(a/2)])} al ${fmt(days[Math.ceil(b/2)-1])}${mix}</span></div>`;
+    for(const t of ts){
+      const st=s.start[t.k],en=s.end[t.k];
+      const dA=days[Math.floor(st/2)],dB=days[Math.ceil(en/2)-1];
+      const nat=t.nat?`<span class="tag nat-${t.nat}">${NAT[t.nat]}</span>`:'';
+      const tag=nat+(t.cond?'<span class="tag cond">condicional</span>':t.kind==='maybe'?'<span class="tag maybe">puede pasar a desarrollo</span>':'');
+      h+=`<div class="g-label"><span class="k">${t.k} · ${t.c}${devs>1?' · Dev '+t.dev:''}${tag}</span><span class="n" title="${t.n}">${t.n}</span><span class="meta">${t.sp} SP · ${t.sp*4} h · ${fmt(dA)}${+dA!==+dB?' – '+fmt(dB):''}</span></div>`;
+      const tip=`<b>${t.k} · ${t.c}</b><br>Empieza: ${longDay(dA)}, ${st%2?'desde mediodía':'en la mañana'}<br>Termina: <b>${longDay(dB)}, ${en%2?'a mediodía':'al final del día'}</b><br>${t.sp} SP · ${t.sp*4} h${devs>1?' · Dev '+t.dev:''}`;
+      h+=`<div class="g-track">${gridlines(span,days)}<div class="bar ${t.kind}" tabindex="0" data-tip="${tip.replace(/"/g,'&quot;')}" style="left:${pct(st)}%;width:${pct(t.sp)}%">${t.sp*4} h</div></div>`;
+      if(t.cond){
+        h+=`<div class="g-label"><span class="k">Derivados de SF-19<span class="tag cond">por estimar</span></span><span class="n">Posibles tickets por módulos compartidos (0 a 13)</span><span class="meta">No suman al total hasta estimarse</span></div>`;
+        h+=`<div class="g-track">${gridlines(span,days)}<div class="bar cond" style="left:${pct(en)}%;width:${pct(Math.min(4,span-en))}%">¿+ tickets?</div></div>`;
+      }
+    }
+  }
+  g.innerHTML=h;
+  document.getElementById('done').textContent='Ya cerrados en fase 1 (no suman tiempo): '+DONE.join(', ')+'.';
+}
+function gridlines(span,days){let x='';for(let u=2;u<span;u+=2){const d=days[u/2];if(d&&d.getDay()===1)x+=`<div class="gridline" style="left:${u/span*100}%"></div>`}return x}
+const tipEl=document.getElementById('tip');
+function showTip(bar,x,y){
+  tipEl.innerHTML=bar.dataset.tip;tipEl.hidden=false;
+  const r=bar.getBoundingClientRect();
+  const px=x??(r.left+r.width/2), py=y??r.top;
+  const w=tipEl.offsetWidth,hh=tipEl.offsetHeight;
+  let left=Math.min(Math.max(8,px-w/2),window.innerWidth-w-8);
+  let top=py-hh-12; if(top<8) top=(y??r.bottom)+16;
+  tipEl.style.left=left+'px';tipEl.style.top=top+'px';
+}
+function hideTip(){tipEl.hidden=true}
+const gEl=document.getElementById('gantt');
+gEl.addEventListener('mousemove',e=>{const b=e.target.closest('.bar[data-tip]');b?showTip(b,e.clientX,e.clientY):hideTip()});
+gEl.addEventListener('mouseleave',hideTip);
+gEl.addEventListener('focusin',e=>{const b=e.target.closest('.bar[data-tip]');if(b)showTip(b)});
+gEl.addEventListener('focusout',hideTip);
+gEl.addEventListener('click',e=>{const b=e.target.closest('.bar[data-tip]');if(b)showTip(b,e.clientX,e.clientY)});
+document.querySelector('.gantt-box').addEventListener('scroll',hideTip,{passive:true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip()});
+document.getElementById('devs').addEventListener('change',render);
+document.getElementById('start').addEventListener('change',render);
+render();
+</script>
+
+</body>
+</html>
