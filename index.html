@@ -74,6 +74,14 @@ p{margin:0;max-width:72ch}
 .bar.cond{background:var(--cond-soft);color:var(--cond);border:1.5px dashed var(--cond)}
 .bar[data-tip]{cursor:pointer}
 .bar[data-tip]:hover,.bar[data-tip]:focus-visible{outline:2px solid var(--fg);outline-offset:1px}
+.g-label.ms-label{background:var(--navy-soft)}
+.g-label.ms-label .n{font-weight:600;color:var(--navy)}
+.g-track.ms-track{background:var(--navy-soft)}
+.ms-line{position:absolute;top:0;bottom:0;border-left:2px dashed var(--navy)}
+.ms{position:absolute;top:50%;width:16px;height:16px;background:var(--navy);transform:translate(-50%,-50%) rotate(45deg);border-radius:2px;cursor:pointer}
+.ms:hover,.ms:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.ms-txt{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
+.kpi.ms-kpi{border-color:var(--navy);border-width:2px}
 .tip{position:fixed;z-index:20;max-width:300px;background:var(--fg);color:var(--bg);border-radius:6px;padding:8px 11px;font-size:13px;line-height:1.45;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:1px}
 .tag.nat-dev{background:var(--dev-soft);color:var(--dev);margin-left:8px}
@@ -106,6 +114,7 @@ footer{font-size:12.5px;color:var(--muted)}
 
   <section class="kpis" aria-label="Resumen">
     <div class="kpi main"><b id="k-dias">–</b><span>días hábiles de desarrollo</span></div>
+    <div class="kpi ms-kpi"><b id="k-ms">–</b><span>conector listo para desplegar en develop (fin etapa 2)</span></div>
     <div class="kpi"><b id="k-fin">–</b><span>fecha estimada de término</span></div>
     <div class="kpi"><b id="k-horas">–</b><span>horas de trabajo</span></div>
     <div class="kpi"><b id="k-sp">–</b><span>story points en el plan</span></div>
@@ -122,6 +131,7 @@ footer{font-size:12.5px;color:var(--muted)}
       <span><i style="background:var(--dev)"></i>Desarrollo</span>
       <span><i style="background:var(--maybe)"></i>Puede terminar en desarrollo</span>
       <span><i style="background:var(--cond-soft);border:1.5px dashed var(--cond)"></i>Condicional, por estimar</span>
+      <span><i style="background:var(--navy);width:10px;height:10px;transform:rotate(45deg)"></i>Hito: conector listo para develop</span>
     </div>
   </section>
 
@@ -247,6 +257,10 @@ function render(){
   document.getElementById('k-horas').textContent=sp*4;
   document.getElementById('k-sp').textContent=sp;
   document.getElementById('k-fin').textContent=fmt(days[totalDays-1])+' '+days[totalDays-1].getFullYear();
+  // hito: el conector queda listo cuando terminan la fase 1 y los hooks (etapas 1 y 2)
+  const msU=Math.max(...T.filter(t=>t.st==='f1'||t.st==='hk').map(t=>s.end[t.k]));
+  const msD=days[Math.ceil(msU/2)-1];
+  document.getElementById('k-ms').textContent=fmt(msD)+' '+msD.getFullYear();
   const span=s.total+2; // unidades visibles (margen para la barra condicional)
   const pct=u=>(u/span*100);
   const g=document.getElementById('gantt');
@@ -275,6 +289,12 @@ function render(){
         h+=`<div class="g-track">${gridlines(span,days)}<div class="bar cond" style="left:${pct(en)}%;width:${pct(Math.min(4,span-en))}%">¿+ tickets?</div></div>`;
       }
     }
+    if(stg.id==='hk'){
+      const msTip=`<b>Hito · Conector listo</b><br>Terminan la fase 1 y los hooks combinados: el conector se puede desplegar en <b>develop</b>.<br>Fecha: <b>${longDay(msD)}, ${msU%2?'a mediodía':'al final del día'}</b>`;
+      const right=pct(msU)>70;
+      h+=`<div class="g-label ms-label"><span class="k">HITO · fin etapas 1 y 2</span><span class="n">Conector listo → despliegue en develop</span><span class="meta">${longDay(msD)}</span></div>`;
+      h+=`<div class="g-track ms-track">${gridlines(span,days)}<div class="ms-line" style="left:${pct(msU)}%"></div><div class="ms" tabindex="0" data-tip="${msTip.replace(/"/g,'&quot;')}" style="left:${pct(msU)}%"></div><span class="ms-txt" style="${right?`right:calc(${100-pct(msU)}% + 16px)`:`left:calc(${pct(msU)}% + 16px)`}">Deploy a develop · ${fmt(msD)}</span></div>`;
+    }
   }
   g.innerHTML=h;
   document.getElementById('done').textContent='Ya cerrados en fase 1 (no suman tiempo): '+DONE.join(', ')+'.';
@@ -292,11 +312,11 @@ function showTip(bar,x,y){
 }
 function hideTip(){tipEl.hidden=true}
 const gEl=document.getElementById('gantt');
-gEl.addEventListener('mousemove',e=>{const b=e.target.closest('.bar[data-tip]');b?showTip(b,e.clientX,e.clientY):hideTip()});
+gEl.addEventListener('mousemove',e=>{const b=e.target.closest('[data-tip]');b?showTip(b,e.clientX,e.clientY):hideTip()});
 gEl.addEventListener('mouseleave',hideTip);
-gEl.addEventListener('focusin',e=>{const b=e.target.closest('.bar[data-tip]');if(b)showTip(b)});
+gEl.addEventListener('focusin',e=>{const b=e.target.closest('[data-tip]');if(b)showTip(b)});
 gEl.addEventListener('focusout',hideTip);
-gEl.addEventListener('click',e=>{const b=e.target.closest('.bar[data-tip]');if(b)showTip(b,e.clientX,e.clientY)});
+gEl.addEventListener('click',e=>{const b=e.target.closest('[data-tip]');if(b)showTip(b,e.clientX,e.clientY)});
 document.querySelector('.gantt-box').addEventListener('scroll',hideTip,{passive:true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip()});
 document.getElementById('devs').addEventListener('change',render);
