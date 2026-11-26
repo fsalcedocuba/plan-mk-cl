@@ -161,7 +161,6 @@ footer{font-size:12.5px;color:var(--muted)}
     <div class="note condn">
       <h2>Lo que todavía puede mover los hitos</h2>
       <ul>
-        <li><b>Ticket A de SCC-1598</b> (pasos del conector que usa el pedido, entre ellos el correo de confirmación): aún no tiene clave ni estimación. Aparece como barra punteada en la etapa 9 y no suma días. Cuando se estime, el hito 9 se corre.</li>
         <li>Zona de envío de Chile sin definir: frena las etapas 3 a 9.</li>
         <li>Producto temporal: falta definir cómo llega a staging y producción (etapa 3 en adelante).</li>
         <li>Etapas 4 y 8: para probar un precio cambiado se necesita acceso al back-office de Mirakl. Si no hay acceso, esa prueba queda para QA.</li>
@@ -172,6 +171,7 @@ footer{font-size:12.5px;color:var(--muted)}
     <div class="note">
       <h2>Supuestos del cálculo</h2>
       <ul>
+        <li>Los story points son los cargados en cada ticket de Jira (revisado el 26-11-2026).</li>
         <li>Se planifican solo los tickets abiertos que quedan visibles con los filtros de la hoja. Los cerrados no suman tiempo.</li>
         <li>Se descuentan fines de semana y feriados de Chile (8 dic, 25 dic y 1 ene).</li>
         <li>Los tiempos son de desarrollo. No incluyen esperas de terceros (Kognivera, FEMSA, conector) ni la regresión de FEMSA.</li>
@@ -221,7 +221,7 @@ const T=[
  {k:'SCC-1639',c:'SF-07k',n:'Validar el pedido antes de crearlo',sp:2,st:'e9',kind:'dev',deps:['SCC-1638']},
  {k:'SCC-1640',c:'SF-07l',n:'Enviar el pedido a Mirakl',sp:1,st:'e9',kind:'dev',deps:['SCC-1639']},
  {k:'SCC-1645',c:'SF-19i',n:'Impuestos de los productos de sellers con la lógica del conector',sp:2,st:'e9',kind:'dev',deps:[]},
- {k:'Ticket A',c:'de SCC-1598',n:'Completar los pasos del conector que usa el pedido (sin clave, por estimar)',sp:0,st:'e9',kind:'dev',cond:true,deps:[]},
+ {k:'SCC-1598',c:'SF-19',n:'Completar los pasos del conector que usa el pedido (ticket A del documento)',sp:3,st:'e9',kind:'dev',deps:[]},
  {k:'SCC-1591',c:'SF-20',n:'Credencial propia del conector con permisos mínimos por ambiente',sp:2,st:'cx',kind:'core',deps:[]},
  {k:'SCC-1586',c:'SF-22',n:'Correo de confirmación y feed de pedidos a Marketing Cloud compatibles con 22.7',sp:4,st:'cx',kind:'core',deps:[]},
  {k:'SCC-1618',c:'PT-10',n:'Configuración de masterCatalog_Chile_MKP por categoría',sp:2,st:'f2',kind:'maybe',nat:'conf',deps:[]},
