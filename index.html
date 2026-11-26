@@ -115,8 +115,8 @@ footer{font-size:12.5px;color:var(--muted)}
 
   <section class="kpis" aria-label="Resumen">
     <div class="kpi main"><b id="k-dias">–</b><span>días hábiles de desarrollo</span></div>
-    <div class="kpi ms-kpi"><b id="k-ms1">–</b><span>hito 1: entrega de la ficha de producto</span></div>
-    <div class="kpi ms-kpi"><b id="k-ms">–</b><span>hito 9: entrega del pedido (todas las etapas)</span></div>
+    <div class="kpi ms-kpi"><b id="k-ms1">–</b><span>hito: término de etapa 1 · ficha de producto</span></div>
+    <div class="kpi ms-kpi"><b id="k-ms">–</b><span>hito: término de etapa 9 · pedido (última etapa)</span></div>
     <div class="kpi"><b id="k-fin">–</b><span>fecha estimada de término</span></div>
     <div class="kpi"><b id="k-horas">–</b><span>horas de trabajo</span></div>
     <div class="kpi"><b id="k-sp">–</b><span>story points en el plan</span></div>
@@ -133,7 +133,7 @@ footer{font-size:12.5px;color:var(--muted)}
       <span><i style="background:var(--navy)"></i>Conector (fuera de las etapas)</span>
       <span><i style="background:var(--maybe)"></i>Puede terminar en desarrollo</span>
       <span><i style="background:var(--cond-soft);border:1.5px dashed var(--cond)"></i>Condicional, por estimar</span>
-      <span><i style="background:var(--navy);width:10px;height:10px;transform:rotate(45deg)"></i>Hito de entrega de la etapa</span>
+      <span><i style="background:var(--navy);width:10px;height:10px;transform:rotate(45deg)"></i>Hito: término de etapa</span>
     </div>
   </section>
 
@@ -319,10 +319,11 @@ function render(){
     }
     if(!stg.plain){
       const u=s.ms[stg.id],d=dayOf(u);
-      const msTip=`<b>Hito ${stg.n} · Entrega de «${stg.name}» al equipo headless</b><br>${stg.what}.<br>Endpoints: ${stg.ep}<br>Fecha: <b>${longDay(d)}, ${u%2?'a mediodía':'al final del día'}</b>${stg.need.length?'<br>Incluye terminadas las etapas '+stageNums(stg.need):''}`;
-      const right=pct(u)>70;
-      h+=`<div class="g-label ms-label"><span class="k">HITO ${stg.n} · entrega al equipo headless</span><span class="n" title="${stg.what}">${stg.what}</span><span class="meta">${longDay(d)}</span></div>`;
-      h+=`<div class="g-track ms-track">${gridlines(span,days)}<div class="ms-line" style="left:${pct(u)}%"></div><div class="ms" tabindex="0" data-tip="${msTip.replace(/"/g,'&quot;')}" style="left:${pct(u)}%"></div><span class="ms-txt" style="${right?`right:calc(${100-pct(u)}% + 16px)`:`left:calc(${pct(u)}% + 16px)`}">Entrega etapa ${stg.n} · ${fmt(d)}</span></div>`;
+      const msName=`Término de etapa ${stg.n} · ${stg.name}`;
+      const msTip=`<b>Hito · ${msName}</b><br>Se entrega al equipo headless: ${stg.what.charAt(0).toLowerCase()+stg.what.slice(1)}.<br>Endpoints: ${stg.ep}<br>Fecha: <b>${longDay(d)}, ${u%2?'a mediodía':'al final del día'}</b>${stg.need.length?'<br>Incluye terminadas las etapas '+stageNums(stg.need):''}`;
+      const right=pct(u)>60;
+      h+=`<div class="g-label ms-label"><span class="k">HITO · entrega al equipo headless</span><span class="n" title="${msName}">${msName}</span><span class="meta">${longDay(d)}</span></div>`;
+      h+=`<div class="g-track ms-track">${gridlines(span,days)}<div class="ms-line" style="left:${pct(u)}%"></div><div class="ms" tabindex="0" data-tip="${msTip.replace(/"/g,'&quot;')}" style="left:${pct(u)}%"></div><span class="ms-txt" style="${right?`right:calc(${100-pct(u)}% + 16px)`:`left:calc(${pct(u)}% + 16px)`}">${msName} · ${fmt(d)}</span></div>`;
     }
   }
   g.innerHTML=h;
