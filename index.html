@@ -91,7 +91,8 @@ p{margin:0;max-width:72ch}
 .nat-table th,.nat-table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 .nat-table th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .nat-box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;overflow-x:auto}
-.tag.cond{background:var(--cond-soft);color:var(--cond)} .tag.maybe{background:var(--maybe-soft);color:var(--maybe)} .tag.dev{background:var(--dev-soft);color:var(--dev)}
+.tag.cond{background:var(--cond-soft);color:var(--cond)} .tag.done{background:var(--grid);color:var(--muted)}
+.g-stage .mono{position:static;font-size:12px;color:var(--muted);flex-basis:100%;padding-left:0} .tag.maybe{background:var(--maybe-soft);color:var(--maybe)} .tag.dev{background:var(--dev-soft);color:var(--dev)}
 .notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .note{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
 .note.warn{border-left:4px solid var(--maybe)} .note.condn{border-left:4px solid var(--cond)}
@@ -108,13 +109,14 @@ footer{font-size:12.5px;color:var(--muted)}
 <div class="wrap">
   <header>
     <div class="eyebrow">Marketplace Mirakl · Cruz Verde Chile</div>
-    <h1>Plan de desarrollo del conector y la integración</h1>
-    <p class="lead">Tickets filtrados en la hoja Marketplace: primero se termina el conector (fase 1), después se crea el cartucho <span class="mono">app_chile_marketplace</span> (SCC-1643) y se combinan los 14 hooks que salieron del análisis SCC-1597 más el de impuestos que salió de SF-19 (SCC-1645), y al final los tickets de la fase 2.</p>
+    <h1>Plan de entrega por etapas al equipo headless</h1>
+    <p class="lead">Los hooks del conector se entregan en nueve etapas, en el orden en que un cliente compra: ficha, búsqueda, carrito, envío y pedido. Cada etapa termina en un <b>hito de entrega</b>: se entrega cuando están terminados y probados sus tickets y los de las etapas que necesita. Después vienen los tickets del conector que no pertenecen a ninguna etapa (SF-20, SF-22) y la fase 2.</p>
   </header>
 
   <section class="kpis" aria-label="Resumen">
     <div class="kpi main"><b id="k-dias">–</b><span>días hábiles de desarrollo</span></div>
-    <div class="kpi ms-kpi"><b id="k-ms">–</b><span>conector listo para desplegar en develop (fin etapa 2)</span></div>
+    <div class="kpi ms-kpi"><b id="k-ms1">–</b><span>hito 1: entrega de la ficha de producto</span></div>
+    <div class="kpi ms-kpi"><b id="k-ms">–</b><span>hito 9: entrega del pedido (todas las etapas)</span></div>
     <div class="kpi"><b id="k-fin">–</b><span>fecha estimada de término</span></div>
     <div class="kpi"><b id="k-horas">–</b><span>horas de trabajo</span></div>
     <div class="kpi"><b id="k-sp">–</b><span>story points en el plan</span></div>
@@ -123,15 +125,15 @@ footer{font-size:12.5px;color:var(--muted)}
   <p class="callout"><b>No incluido:</b> este plan no contempla las correcciones que resulten de la regresión de SFCC en la versión 22.7 (SF-23, PT-06 y PT-07, a cargo de FEMSA). Si la regresión encuentra errores, sus correcciones se estiman y se suman aparte.</p>
 
   <section class="controls" aria-label="Supuestos del cálculo">
-    <label for="start">Inicio del plan<input type="date" id="start" value="2026-11-20"></label>
+    <label for="start">Inicio del plan<input type="date" id="start" value="2026-11-26"></label>
     <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1" selected>1 desarrollador</option><option value="2">2 desarrolladores</option><option value="3">3 desarrolladores</option></select></label>
     <div class="rule">1 SP = 4 horas · 1 día = 8 horas · 1 SP = medio día</div>
     <div class="legend">
-      <span><i style="background:var(--navy)"></i>Conector (fase 1)</span>
       <span><i style="background:var(--dev)"></i>Desarrollo</span>
+      <span><i style="background:var(--navy)"></i>Conector (fuera de las etapas)</span>
       <span><i style="background:var(--maybe)"></i>Puede terminar en desarrollo</span>
       <span><i style="background:var(--cond-soft);border:1.5px dashed var(--cond)"></i>Condicional, por estimar</span>
-      <span><i style="background:var(--navy);width:10px;height:10px;transform:rotate(45deg)"></i>Hito: conector listo para develop</span>
+      <span><i style="background:var(--navy);width:10px;height:10px;transform:rotate(45deg)"></i>Hito de entrega de la etapa</span>
     </div>
   </section>
 
@@ -157,12 +159,14 @@ footer{font-size:12.5px;color:var(--muted)}
 
   <section class="notes">
     <div class="note condn">
-      <h2>SCC-1598 es condicional</h2>
-      <p>SF-19 arma la base del cartucho <span class="mono">app_chile_marketplace</span>, que necesitan los 14 hooks, y revisa los 13 módulos compartidos del conector (por ejemplo <span class="mono">cartHelpers</span> y <span class="mono">checkoutHelpers</span>).</p>
+      <h2>Lo que todavía puede mover los hitos</h2>
       <ul>
-        <li>Cada módulo que haya que adaptar se convierte en un ticket nuevo. Hoy no se sabe cuántos son: pueden ser 0 o hasta 13.</li>
-        <li>El plan muestra esos tickets como una barra punteada después de SF-19. No suman días hasta que se estimen.</li>
-        <li>Para empezar los hooks basta con la base del cartucho. No hace falta esperar la revisión completa de los módulos.</li>
+        <li><b>Ticket A de SCC-1598</b> (pasos del conector que usa el pedido, entre ellos el correo de confirmación): aún no tiene clave ni estimación. Aparece como barra punteada en la etapa 9 y no suma días. Cuando se estime, el hito 9 se corre.</li>
+        <li>Zona de envío de Chile sin definir: frena las etapas 3 a 9.</li>
+        <li>Producto temporal: falta definir cómo llega a staging y producción (etapa 3 en adelante).</li>
+        <li>Etapas 4 y 8: para probar un precio cambiado se necesita acceso al back-office de Mirakl. Si no hay acceso, esa prueba queda para QA.</li>
+        <li>Etapa 9: el sandbox no tiene pasarela de pago ni front. Hace falta un ambiente donde crear un pedido y acordar cómo probar el envío a Mirakl.</li>
+        <li>Etapas 1 y 2: correr la importación de productos de sellers y reconstruir el índice de búsqueda en cada ambiente.</li>
       </ul>
     </div>
     <div class="note">
@@ -173,43 +177,53 @@ footer{font-size:12.5px;color:var(--muted)}
         <li>Los tiempos son de desarrollo. No incluyen esperas de terceros (Kognivera, FEMSA, conector) ni la regresión de FEMSA.</li>
         <li>No incluye correcciones posteriores a la regresión en la versión 22.7. Se estiman cuando FEMSA entregue sus resultados.</li>
         <li>SF-14c (SCC-1616) y SF-43 (SCC-1621) quedaron fuera del filtro, pero PT-10, SF-06 y SF-36a dependen de ellos. Se asume que estarán listos cuando empiece la fase 2.</li>
-        <li>Con 2 o 3 desarrolladores, la fase 2 sigue empezando cuando termina la fase 1. Lo que se acorta es el tiempo de los hooks y de la fase 2.</li>
+        <li>Un hito se cumple cuando terminan los tickets de su etapa y los de las etapas que necesita: las etapas 4, 5 y 8 necesitan la 3; las etapas 6, 7 y 9 necesitan la 3 y la 5.</li>
+        <li>Con 1 desarrollador los tickets se toman en el orden de las etapas. Con 2 o 3, las etapas sin dependencia entre sí avanzan en paralelo. La fase 2 empieza cuando terminan las etapas de entrega.</li>
+        <li>Terminados según el documento de etapas (no suman tiempo): SCC-1643 (base del cartucho, común a todas las etapas) y SCC-1629 (etapa 3).</li>
       </ul>
     </div>
   </section>
 
   <p class="done-list" id="done"></p>
   <div class="tip" id="tip" role="tooltip" hidden></div>
-  <footer>Fuente: hoja Marketplace de «PROYECTOS PO CHILE.xlsx» (filtros aplicados) y tickets SCC en Jira. Análisis de hooks: página de Confluence de SCC-1597.</footer>
+  <footer>Fuente: «Mirakl en Cruz Verde Chile: plan de entrega por etapas» (Confluence, espacio ECOMS), hoja Marketplace de «PROYECTOS PO CHILE.xlsx» y tickets SCC en Jira.</footer>
 </div>
 
 <script>
-// kind: core = fase 1 conector, dev = desarrollo, maybe = puede terminar en desarrollo
+// kind: dev = desarrollo, core = conector fuera de etapas, maybe = puede terminar en desarrollo
+// need: etapas que deben estar terminadas para cumplir el hito de la etapa (documento de etapas, Confluence ECOMS)
 const STAGES=[
- {id:'f1',name:'Etapa 1 · Terminar el conector (fase 1)'},
- {id:'hk',name:'Etapa 2 · Hooks combinados del conector (origen SCC-1597 y SF-19)'},
- {id:'f2',name:'Etapa 3 · Fase 2'}
+ {id:'e1',n:1,name:'Ficha de producto',what:'Mostrar en la ficha los productos de los sellers',ep:'GET /products/{id}',need:[]},
+ {id:'e2',n:2,name:'Búsqueda',what:'Mostrar en los listados cuántos sellers venden cada producto',ep:'GET /product_search',need:[]},
+ {id:'e3',n:3,name:'Agregar y ver el carrito',what:'Agregar productos de sellers, ver el carrito con sus datos y listar los métodos de envío con el costo bien calculado',ep:'POST /baskets/{id}/items · GET /baskets/{id} · GET /customers/{id}/baskets · GET …/shipping_methods',need:[]},
+ {id:'e4',n:4,name:'Cambiar la cantidad',what:'Cambiar la cantidad de un producto de seller con su precio actualizado',ep:'PATCH /baskets/{id}/items/{item_id}',need:['e3']},
+ {id:'e5',n:5,name:'Elegir el envío',what:'Elegir el método de envío con el costo de cada seller',ep:'PUT …/shipments/{id}/shipping_method',need:['e3']},
+ {id:'e6',n:6,name:'Quitar del carrito',what:'Quitar un producto sin perder el precio de los productos de sellers que quedan',ep:'DELETE /baskets/{id}/items/{item_id}',need:['e3','e5']},
+ {id:'e7',n:7,name:'Dirección de envío',what:'Cambiar la dirección con el costo de los sellers al día',ep:'PUT …/shipments/{id}/shipping_address',need:['e3','e5']},
+ {id:'e8',n:8,name:'Actualizar precios del carrito',what:'Refrescar precios y envío de los sellers en un carrito existente',ep:'PATCH /baskets/{id} (con c_updatePrices)',need:['e3']},
+ {id:'e9',n:9,name:'Pedido',what:'Confirmar la compra de un carrito con productos de sellers y enviar el pedido a Mirakl',ep:'POST /orders (antes y después de crear el pedido)',need:['e3','e5']},
+ {id:'cx',name:'Conector · tickets fuera de las etapas de entrega',plain:true},
+ {id:'f2',name:'Fase 2',plain:true}
 ];
 const T=[
- {k:'SCC-1598',c:'SF-19',n:'Base de app_chile_marketplace y revisión de los 13 módulos compartidos',sp:4,st:'f1',kind:'core',cond:true,deps:[]},
- {k:'SCC-1591',c:'SF-20',n:'Credencial propia del conector con permisos mínimos por ambiente',sp:2,st:'f1',kind:'core',deps:[]},
- {k:'SCC-1586',c:'SF-22',n:'Correo de confirmación y feed de pedidos a Marketing Cloud compatibles con 22.7',sp:4,st:'f1',kind:'core',deps:[]},
- {k:'SCC-1629',c:'SF-07a',n:'Corregir shippingHelpers: el front lista los métodos de envío',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1630',c:'SF-07b',n:'Combinar el cálculo del carrito (dw.order.calculate)',sp:3,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1631',c:'SF-07c',n:'Agregar producto: la oferta entra al carrito (items.afterPOST)',sp:1,st:'hk',kind:'dev',deps:['SCC-1630']},
- {k:'SCC-1632',c:'SF-07d',n:'Borrar producto del carrito (item.afterDELETE)',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1633',c:'SF-07e',n:'Dirección de envío (shipping_address.afterPUT)',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1634',c:'SF-07f',n:'Actualizar carrito con c_updatePrices (basket.afterPATCH)',sp:2,st:'hk',kind:'dev',deps:['SCC-1630']},
- {k:'SCC-1635',c:'SF-07g',n:'Cambiar cantidad (item.afterPATCH)',sp:1,st:'hk',kind:'dev',deps:['SCC-1630']},
- {k:'SCC-1636',c:'SF-07h',n:'Respuesta del carrito con datos de sellers',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1637',c:'SF-07i',n:'Cálculo del envío sin envío gratis indebido',sp:2,st:'hk',kind:'dev',deps:['SCC-1629']},
- {k:'SCC-1638',c:'SF-07j',n:'Método de envío con c_marketplaceData',sp:1,st:'hk',kind:'dev',deps:['SCC-1629']},
- {k:'SCC-1639',c:'SF-07k',n:'Antes de crear el pedido: validación de Mirakl',sp:2,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1640',c:'SF-07l',n:'Después de crear el pedido: envío a Mirakl',sp:1,st:'hk',kind:'dev',deps:['SCC-1639']},
- {k:'SCC-1641',c:'SF-07m',n:'Ficha de producto con ofertas de sellers',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1642',c:'SF-07n',n:'Búsqueda con ofertas de sellers',sp:1,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1643',c:'Cartucho',n:'Creación del cartucho app_chile_marketplace',sp:2,st:'hk',kind:'dev',deps:['SCC-1598']},
- {k:'SCC-1645',c:'SF-19i',n:'Combinar el hook de impuestos (taxes.js) para las líneas de oferta',sp:2,st:'hk',kind:'dev',deps:['SCC-1598','SCC-1643']},
+ {k:'SCC-1641',c:'SF-07m',n:'La ficha de producto incluye los productos de los sellers',sp:1,st:'e1',kind:'dev',deps:[]},
+ {k:'SCC-1642',c:'SF-07n',n:'Los resultados de búsqueda incluyen datos de los sellers',sp:1,st:'e2',kind:'dev',deps:[]},
+ {k:'SCC-1629',c:'SF-07a',n:'Listar los métodos de envío sin errores',sp:1,st:'e3',kind:'dev',done:true,deps:[]},
+ {k:'SCC-1630',c:'SF-07b',n:'El precio del producto de seller se respeta en todo el carrito',sp:3,st:'e3',kind:'dev',deps:[]},
+ {k:'SCC-1631',c:'SF-07c',n:'Agregar un producto de seller al carrito',sp:1,st:'e3',kind:'dev',deps:['SCC-1630']},
+ {k:'SCC-1636',c:'SF-07h',n:'Ver el carrito con los datos de los sellers',sp:1,st:'e3',kind:'dev',deps:[]},
+ {k:'SCC-1637',c:'SF-07i',n:'Calcular bien el costo de envío',sp:2,st:'e3',kind:'dev',deps:['SCC-1630']},
+ {k:'SCC-1635',c:'SF-07g',n:'Cambiar la cantidad de un producto de seller',sp:1,st:'e4',kind:'dev',deps:['SCC-1630','SCC-1631']},
+ {k:'SCC-1638',c:'SF-07j',n:'Elegir el método de envío y cotizar a los sellers',sp:1,st:'e5',kind:'dev',deps:['SCC-1630','SCC-1631']},
+ {k:'SCC-1632',c:'SF-07d',n:'Quitar un producto del carrito',sp:1,st:'e6',kind:'dev',deps:['SCC-1630','SCC-1631','SCC-1638']},
+ {k:'SCC-1633',c:'SF-07e',n:'Cargar la dirección de envío',sp:1,st:'e7',kind:'dev',deps:['SCC-1638']},
+ {k:'SCC-1634',c:'SF-07f',n:'Actualizar los precios del carrito',sp:2,st:'e8',kind:'dev',deps:['SCC-1630','SCC-1631']},
+ {k:'SCC-1639',c:'SF-07k',n:'Validar el pedido antes de crearlo',sp:2,st:'e9',kind:'dev',deps:['SCC-1638']},
+ {k:'SCC-1640',c:'SF-07l',n:'Enviar el pedido a Mirakl',sp:1,st:'e9',kind:'dev',deps:['SCC-1639']},
+ {k:'SCC-1645',c:'SF-19i',n:'Impuestos de los productos de sellers con la lógica del conector',sp:2,st:'e9',kind:'dev',deps:[]},
+ {k:'Ticket A',c:'de SCC-1598',n:'Completar los pasos del conector que usa el pedido (sin clave, por estimar)',sp:0,st:'e9',kind:'dev',cond:true,deps:[]},
+ {k:'SCC-1591',c:'SF-20',n:'Credencial propia del conector con permisos mínimos por ambiente',sp:2,st:'cx',kind:'core',deps:[]},
+ {k:'SCC-1586',c:'SF-22',n:'Correo de confirmación y feed de pedidos a Marketing Cloud compatibles con 22.7',sp:4,st:'cx',kind:'core',deps:[]},
  {k:'SCC-1618',c:'PT-10',n:'Configuración de masterCatalog_Chile_MKP por categoría',sp:2,st:'f2',kind:'maybe',nat:'conf',deps:[]},
  {k:'SCC-1619',c:'SF-28b',n:'Códigos de productos de sellers y bajas acotadas',sp:1,st:'f2',kind:'maybe',nat:'conf',deps:['SCC-1618']},
  {k:'SCC-1620',c:'SF-15',n:'Datos de categoría y producto que se envían a Mirakl',sp:3,st:'f2',kind:'maybe',nat:'def',deps:['SCC-1618']},
@@ -218,7 +232,7 @@ const T=[
  {k:'SCC-1622',c:'SF-36a',n:'Observabilidad: logs, alertas y runbook',sp:3,st:'f2',kind:'maybe',nat:'conf',deps:[]},
 ];
 const NAT={dev:'Desarrollo',conf:'Configuración',def:'Definición'};
-const DONE=['SCC-1584 SF-01','SCC-1587 SF-03','SCC-1592 PT-03a','SCC-1597 SF-07'];
+const DONE=['SCC-1584 SF-01','SCC-1587 SF-03','SCC-1592 PT-03a','SCC-1597 SF-07','SCC-1643 base del cartucho app_chile_marketplace','SCC-1629 SF-07a'];
 const HOLI=new Set(['2026-12-08','2026-12-25','2027-01-01','2027-05-01','2027-05-21']);
 const MON=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
@@ -228,76 +242,91 @@ function fmt(d){return d.getDate()+' '+MON[d.getMonth()]}
 const WD=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const MONL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 function longDay(d){return WD[d.getDay()]+' '+d.getDate()+' de '+MONL[d.getMonth()]+' de '+d.getFullYear()}
+const work=t=>t.done||t.cond?0:t.sp;
+const stageNums=need=>need.map(x=>x.slice(1)).join(' y ');
 
-// unidades de medio día (1 SP = 4 h = 1 unidad)
+// unidades de medio día (1 SP = 4 h = 1 unidad). Los tickets se toman en el orden de las etapas.
 function schedule(devs){
   const end={},start={};const free=Array(devs).fill(0);
-  let gateF2=0;
-  for(const st of ['f1','hk','f2']){
-    if(st==='f2')gateF2=Math.max(...T.filter(t=>t.st==='f1').map(t=>end[t.k]));
-    for(const t of T.filter(x=>x.st===st)){
-      let earliest=Math.max(0,...t.deps.map(d=>end[d]));
-      if(st==='f2')earliest=Math.max(earliest,gateF2);
+  const delivery=STAGES.filter(x=>!x.plain).map(x=>x.id);
+  for(const stg of STAGES){
+    const gate=stg.id==='f2'?Math.max(0,...T.filter(t=>delivery.includes(t.st)).map(t=>end[t.k])):0;
+    for(const t of T.filter(x=>x.st===stg.id)){
+      const earliest=Math.max(gate,...t.deps.map(d=>end[d]??0));
+      if(!work(t)){start[t.k]=end[t.k]=earliest;continue}
       let best=0,bs=Infinity;
       free.forEach((f,i)=>{const s=Math.max(f,earliest);if(s<bs){bs=s;best=i}});
       start[t.k]=bs;end[t.k]=bs+t.sp;free[best]=end[t.k];t.dev=best+1;
     }
   }
-  return {start,end,total:Math.max(...Object.values(end))};
+  // hito de cada etapa: terminan sus tickets y los de las etapas que necesita
+  const ms={};
+  for(const stg of STAGES.filter(x=>!x.plain)){
+    const ids=[stg.id,...stg.need];
+    ms[stg.id]=Math.max(1,...T.filter(t=>ids.includes(t.st)).map(t=>end[t.k]));
+  }
+  return {start,end,ms,total:Math.max(...Object.values(end))};
 }
 
 function render(){
   const devs=+document.getElementById('devs').value;
-  let startDate=document.getElementById('start').value||'2026-11-20';
+  const startDate=document.getElementById('start').value||'2026-11-26';
   const s=schedule(devs);
   const totalDays=Math.ceil(s.total/2);
   const days=workDays(startDate,totalDays+12);
-  const sp=T.reduce((a,t)=>a+t.sp,0);
+  const dayOf=u=>days[Math.max(0,Math.ceil(u/2)-1)];
+  const sp=T.reduce((a,t)=>a+work(t),0);
   document.getElementById('k-dias').textContent=(s.total/2).toLocaleString('es-CL');
   document.getElementById('k-horas').textContent=sp*4;
   document.getElementById('k-sp').textContent=sp;
   document.getElementById('k-fin').textContent=fmt(days[totalDays-1])+' '+days[totalDays-1].getFullYear();
-  // hito: el conector queda listo cuando terminan la fase 1 y los hooks (etapas 1 y 2)
-  const msU=Math.max(...T.filter(t=>t.st==='f1'||t.st==='hk').map(t=>s.end[t.k]));
-  const msD=days[Math.ceil(msU/2)-1];
-  document.getElementById('k-ms').textContent=fmt(msD)+' '+msD.getFullYear();
-  const span=s.total+2; // unidades visibles (margen para la barra condicional)
+  const m1=dayOf(s.ms.e1),m9=dayOf(s.ms.e9);
+  document.getElementById('k-ms1').textContent=fmt(m1)+' '+m1.getFullYear();
+  document.getElementById('k-ms').textContent=fmt(m9)+' '+m9.getFullYear();
+  const span=s.total+2;
   const pct=u=>(u/span*100);
   const g=document.getElementById('gantt');
   let h='<div class="g-label g-head" style="justify-content:end"><span class="meta">Ticket · SP · horas · fechas</span></div><div class="g-head"><div class="weeks">';
-  // semanas: cada lunes visible
   const monSoon=[1,2].some(k=>days[k]&&days[k].getDay()===1);
   for(let u=0;u<span;u+=2){const d=days[u/2];if(!d)break;if(d.getDay()===1||(u===0&&!monSoon)){h+=`<div class="wk" style="left:${pct(u)}%"><b>Sem. ${fmt(d)}</b>${d.getFullYear()}</div>`}}
   h+='</div></div>';
   for(const stg of STAGES){
     const ts=T.filter(t=>t.st===stg.id);
-    const a=Math.min(...ts.map(t=>s.start[t.k])),b=Math.max(...ts.map(t=>s.end[t.k]));
-    const spS=ts.reduce((x,t)=>x+t.sp,0);
+    const tw=ts.filter(work);
+    const spS=tw.reduce((x,t)=>x+t.sp,0);
+    let range='';
+    if(tw.length){const a=Math.min(...tw.map(t=>s.start[t.k])),b=Math.max(...tw.map(t=>s.end[t.k]));range=` · ${fmt(days[Math.floor(a/2)])} al ${fmt(dayOf(b))}`}
     let mix='';
     if(stg.id==='f2'){mix=' · '+['dev','conf','def'].map(n=>{const x=ts.filter(t=>t.nat===n);return `${NAT[n]}: ${x.length} (${x.reduce((a,t)=>a+t.sp,0)*4} h)`}).join(' · ')}
-    h+=`<div class="g-stage"><strong>${stg.name}</strong><span>${spS} SP · ${spS*4} h · ${(spS/2).toLocaleString('es-CL')} días de trabajo · ${fmt(days[Math.floor(a/2)])} al ${fmt(days[Math.ceil(b/2)-1])}${mix}</span></div>`;
+    const title=stg.plain?stg.name:`Etapa ${stg.n} · ${stg.name}`;
+    const needTxt=stg.need&&stg.need.length?` · necesita la${stg.need.length>1?'s':''} etapa${stg.need.length>1?'s':''} ${stageNums(stg.need)}`:'';
+    h+=`<div class="g-stage"><strong>${title}</strong><span>${spS} SP · ${spS*4} h${range}${needTxt}${mix}</span>${stg.ep?`<span class="mono">${stg.ep}</span>`:''}</div>`;
     for(const t of ts){
-      const st=s.start[t.k],en=s.end[t.k];
-      const dA=days[Math.floor(st/2)],dB=days[Math.ceil(en/2)-1];
       const nat=t.nat?`<span class="tag nat-${t.nat}">${NAT[t.nat]}</span>`:'';
-      const tag=nat+(t.cond?'<span class="tag cond">condicional</span>':t.kind==='maybe'?'<span class="tag maybe">puede pasar a desarrollo</span>':'');
-      h+=`<div class="g-label"><span class="k">${t.k} · ${t.c}${devs>1?' · Dev '+t.dev:''}${tag}</span><span class="n" title="${t.n}">${t.n}</span><span class="meta">${t.sp} SP · ${t.sp*4} h · ${fmt(dA)}${+dA!==+dB?' – '+fmt(dB):''}</span></div>`;
+      const tag=nat+(t.done?'<span class="tag done">terminado</span>':t.cond?'<span class="tag cond">por estimar</span>':t.kind==='maybe'?'<span class="tag maybe">puede pasar a desarrollo</span>':'');
+      const head=`<span class="k">${t.k} · ${t.c}${devs>1&&work(t)?' · Dev '+t.dev:''}${tag}</span><span class="n" title="${t.n}">${t.n}</span>`;
+      if(!work(t)){
+        const at=s.ms[stg.id];
+        h+=`<div class="g-label">${head}<span class="meta">${t.done?t.sp+' SP · terminado, no suma tiempo':'No suma al total hasta estimarse'}</span></div>`;
+        h+=`<div class="g-track">${gridlines(span,days)}${t.cond?`<div class="bar cond" style="left:${pct(at)}%;width:${pct(Math.min(2,span-at))}%">¿+ días?</div>`:''}</div>`;
+        continue;
+      }
+      const st=s.start[t.k],en=s.end[t.k];
+      const dA=days[Math.floor(st/2)],dB=dayOf(en);
+      h+=`<div class="g-label">${head}<span class="meta">${t.sp} SP · ${t.sp*4} h · ${fmt(dA)}${+dA!==+dB?' – '+fmt(dB):''}</span></div>`;
       const tip=`<b>${t.k} · ${t.c}</b><br>Empieza: ${longDay(dA)}, ${st%2?'desde mediodía':'en la mañana'}<br>Termina: <b>${longDay(dB)}, ${en%2?'a mediodía':'al final del día'}</b><br>${t.sp} SP · ${t.sp*4} h${devs>1?' · Dev '+t.dev:''}`;
       h+=`<div class="g-track">${gridlines(span,days)}<div class="bar ${t.kind}" tabindex="0" data-tip="${tip.replace(/"/g,'&quot;')}" style="left:${pct(st)}%;width:${pct(t.sp)}%">${t.sp*4} h</div></div>`;
-      if(t.cond){
-        h+=`<div class="g-label"><span class="k">Derivados de SF-19<span class="tag cond">por estimar</span></span><span class="n">Posibles tickets por módulos compartidos (0 a 13)</span><span class="meta">No suman al total hasta estimarse</span></div>`;
-        h+=`<div class="g-track">${gridlines(span,days)}<div class="bar cond" style="left:${pct(en)}%;width:${pct(Math.min(4,span-en))}%">¿+ tickets?</div></div>`;
-      }
     }
-    if(stg.id==='hk'){
-      const msTip=`<b>Hito · Conector listo</b><br>Terminan la fase 1 y los hooks combinados: el conector se puede desplegar en <b>develop</b>.<br>Fecha: <b>${longDay(msD)}, ${msU%2?'a mediodía':'al final del día'}</b>`;
-      const right=pct(msU)>70;
-      h+=`<div class="g-label ms-label"><span class="k">HITO · fin etapas 1 y 2</span><span class="n">Conector listo → despliegue en develop</span><span class="meta">${longDay(msD)}</span></div>`;
-      h+=`<div class="g-track ms-track">${gridlines(span,days)}<div class="ms-line" style="left:${pct(msU)}%"></div><div class="ms" tabindex="0" data-tip="${msTip.replace(/"/g,'&quot;')}" style="left:${pct(msU)}%"></div><span class="ms-txt" style="${right?`right:calc(${100-pct(msU)}% + 16px)`:`left:calc(${pct(msU)}% + 16px)`}">Deploy a develop · ${fmt(msD)}</span></div>`;
+    if(!stg.plain){
+      const u=s.ms[stg.id],d=dayOf(u);
+      const msTip=`<b>Hito ${stg.n} · Entrega de «${stg.name}» al equipo headless</b><br>${stg.what}.<br>Endpoints: ${stg.ep}<br>Fecha: <b>${longDay(d)}, ${u%2?'a mediodía':'al final del día'}</b>${stg.need.length?'<br>Incluye terminadas las etapas '+stageNums(stg.need):''}`;
+      const right=pct(u)>70;
+      h+=`<div class="g-label ms-label"><span class="k">HITO ${stg.n} · entrega al equipo headless</span><span class="n" title="${stg.what}">${stg.what}</span><span class="meta">${longDay(d)}</span></div>`;
+      h+=`<div class="g-track ms-track">${gridlines(span,days)}<div class="ms-line" style="left:${pct(u)}%"></div><div class="ms" tabindex="0" data-tip="${msTip.replace(/"/g,'&quot;')}" style="left:${pct(u)}%"></div><span class="ms-txt" style="${right?`right:calc(${100-pct(u)}% + 16px)`:`left:calc(${pct(u)}% + 16px)`}">Entrega etapa ${stg.n} · ${fmt(d)}</span></div>`;
     }
   }
   g.innerHTML=h;
-  document.getElementById('done').textContent='Ya cerrados en fase 1 (no suman tiempo): '+DONE.join(', ')+'.';
+  document.getElementById('done').textContent='Ya terminados (no suman tiempo): '+DONE.join(', ')+'.';
 }
 function gridlines(span,days){let x='';for(let u=2;u<span;u+=2){const d=days[u/2];if(d&&d.getDay()===1)x+=`<div class="gridline" style="left:${u/span*100}%"></div>`}return x}
 const tipEl=document.getElementById('tip');
