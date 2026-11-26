@@ -179,7 +179,7 @@ footer{font-size:12.5px;color:var(--muted)}
         <li>SF-14c (SCC-1616) y SF-43 (SCC-1621) quedaron fuera del filtro, pero PT-10, SF-06 y SF-36a dependen de ellos. Se asume que estarán listos cuando empiece la fase 2.</li>
         <li>Un hito se cumple cuando terminan los tickets de su etapa y los de las etapas que necesita: las etapas 4, 5 y 8 necesitan la 3; las etapas 6, 7 y 9 necesitan la 3 y la 5.</li>
         <li>Con 1 desarrollador los tickets se toman en el orden de las etapas. Con 2 o 3, las etapas sin dependencia entre sí avanzan en paralelo. La fase 2 empieza cuando terminan las etapas de entrega.</li>
-        <li>Terminados según el documento de etapas (no suman tiempo): SCC-1643 (base del cartucho, común a todas las etapas) y SCC-1629 (etapa 3).</li>
+        <li>Terminado (no suma tiempo): SCC-1643 (base del cartucho, común a todas las etapas).</li>
       </ul>
     </div>
   </section>
@@ -208,11 +208,11 @@ const STAGES=[
 const T=[
  {k:'SCC-1641',c:'SF-07m',n:'La ficha de producto incluye los productos de los sellers',sp:1,st:'e1',kind:'dev',deps:[]},
  {k:'SCC-1642',c:'SF-07n',n:'Los resultados de búsqueda incluyen datos de los sellers',sp:1,st:'e2',kind:'dev',deps:[]},
- {k:'SCC-1629',c:'SF-07a',n:'Listar los métodos de envío sin errores',sp:1,st:'e3',kind:'dev',done:true,deps:[]},
+ {k:'SCC-1629',c:'SF-07a',n:'Listar los métodos de envío sin errores',sp:1,st:'e3',kind:'dev',deps:[]},
  {k:'SCC-1630',c:'SF-07b',n:'El precio del producto de seller se respeta en todo el carrito',sp:3,st:'e3',kind:'dev',deps:[]},
  {k:'SCC-1631',c:'SF-07c',n:'Agregar un producto de seller al carrito',sp:1,st:'e3',kind:'dev',deps:['SCC-1630']},
  {k:'SCC-1636',c:'SF-07h',n:'Ver el carrito con los datos de los sellers',sp:1,st:'e3',kind:'dev',deps:[]},
- {k:'SCC-1637',c:'SF-07i',n:'Calcular bien el costo de envío',sp:2,st:'e3',kind:'dev',deps:['SCC-1630']},
+ {k:'SCC-1637',c:'SF-07i',n:'Calcular bien el costo de envío',sp:2,st:'e3',kind:'dev',deps:['SCC-1629','SCC-1630']},
  {k:'SCC-1635',c:'SF-07g',n:'Cambiar la cantidad de un producto de seller',sp:1,st:'e4',kind:'dev',deps:['SCC-1630','SCC-1631']},
  {k:'SCC-1638',c:'SF-07j',n:'Elegir el método de envío y cotizar a los sellers',sp:1,st:'e5',kind:'dev',deps:['SCC-1630','SCC-1631']},
  {k:'SCC-1632',c:'SF-07d',n:'Quitar un producto del carrito',sp:1,st:'e6',kind:'dev',deps:['SCC-1630','SCC-1631','SCC-1638']},
@@ -232,7 +232,7 @@ const T=[
  {k:'SCC-1622',c:'SF-36a',n:'Observabilidad: logs, alertas y runbook',sp:3,st:'f2',kind:'maybe',nat:'conf',deps:[]},
 ];
 const NAT={dev:'Desarrollo',conf:'Configuración',def:'Definición'};
-const DONE=['SCC-1584 SF-01','SCC-1587 SF-03','SCC-1592 PT-03a','SCC-1597 SF-07','SCC-1643 base del cartucho app_chile_marketplace','SCC-1629 SF-07a'];
+const DONE=['SCC-1584 SF-01','SCC-1587 SF-03','SCC-1592 PT-03a','SCC-1597 SF-07','SCC-1643 base del cartucho app_chile_marketplace'];
 const HOLI=new Set(['2026-12-08','2026-12-25','2027-01-01','2027-05-01','2027-05-21']);
 const MON=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
