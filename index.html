@@ -298,8 +298,8 @@ function render(){
   document.getElementById('k-sp').textContent=sp;
   document.getElementById('k-fin').textContent=fmt(days[totalDays-1])+' '+days[totalDays-1].getFullYear();
   const m1=dayOf(s.ms.e1),m9=dayOf(s.ms.e9);
-  document.getElementById('k-ms1').textContent=fmt(m1)+' '+m1.getFullYear();
-  document.getElementById('k-ms').textContent=fmt(m9)+' '+m9.getFullYear();
+  document.getElementById('k-ms1').textContent=fmt(m1);
+  document.getElementById('k-ms').textContent=fmt(m9);
   const span=s.total+2;
   const pct=u=>(u/span*100);
   const g=document.getElementById('gantt');
