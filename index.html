@@ -126,9 +126,8 @@ footer{font-size:12.5px;color:var(--muted)}
 
   <section class="controls" aria-label="Supuestos del cálculo">
     <label for="start">Inicio del plan<input type="date" id="start" value="2026-11-26"></label>
-    <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1" selected>1 desarrollador</option><option value="2">2 desarrolladores</option><option value="3">3 desarrolladores</option></select></label>
+    <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1" selected>1 desarrollador</option><option value="2">2 desarrolladores</option></select></label>
     <label for="start2" id="lbl-start2" hidden>Se suma el desarrollador 2<input type="date" id="start2"></label>
-    <label for="start3" id="lbl-start3" hidden>Se suma el desarrollador 3<input type="date" id="start3"></label>
     <div class="rule">1 SP = 4 horas · 1 día = 8 horas · 1 SP = medio día</div>
     <div class="legend">
       <span><i style="background:var(--dev)"></i>Desarrollo</span>
@@ -180,7 +179,7 @@ footer{font-size:12.5px;color:var(--muted)}
         <li>No incluye correcciones posteriores a la regresión en la versión 22.7. Se estiman cuando FEMSA entregue sus resultados.</li>
         <li>SF-14c (SCC-1616) y SF-43 (SCC-1621) quedaron fuera del filtro, pero PT-10, SF-06 y SF-36a dependen de ellos. Se asume que estarán listos cuando empiece la fase 2.</li>
         <li>Un hito se cumple cuando terminan los tickets de su etapa y los de las etapas que necesita: las etapas 4, 5 y 8 necesitan la 3; las etapas 6, 7 y 9 necesitan la 3 y la 5.</li>
-        <li>Con 1 desarrollador los tickets se toman en el orden de las etapas. Con 2 o 3, las etapas sin dependencia entre sí avanzan en paralelo. La fase 2 empieza cuando terminan las etapas de entrega.</li>
+        <li>Con 1 desarrollador los tickets se toman en el orden de las etapas. Con 2, las etapas sin dependencia entre sí avanzan en paralelo. La fase 2 empieza cuando terminan las etapas de entrega.</li>
         <li>Cada desarrollador adicional empieza en la fecha en que se suma. Desde ese día toma el siguiente ticket pendiente que ya se pueda empezar.</li>
         <li>Terminado (no suma tiempo): SCC-1643 (base del cartucho, común a todas las etapas).</li>
       </ul>
@@ -279,7 +278,7 @@ function render(){
   const startDate=document.getElementById('start').value||'2026-11-26';
   // fecha en que se suma cada desarrollador adicional (nunca antes del inicio del plan)
   const offsets=[0];
-  for(const n of [2,3]){
+  for(const n of [2]){
     const inp=document.getElementById('start'+n);
     document.getElementById('lbl-start'+n).hidden=devs<n;
     if(!inp.value||inp.value<startDate)inp.value=startDate;
@@ -367,7 +366,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip()});
 document.getElementById('devs').addEventListener('change',render);
 document.getElementById('start').addEventListener('change',render);
 document.getElementById('start2').addEventListener('change',render);
-document.getElementById('start3').addEventListener('change',render);
 render();
 </script>
 
