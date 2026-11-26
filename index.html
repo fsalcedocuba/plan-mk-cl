@@ -126,9 +126,11 @@ footer{font-size:12.5px;color:var(--muted)}
   <p class="callout"><b>No incluido:</b> este plan no contempla las correcciones que resulten de la regresión de SFCC en la versión 22.7 (SF-23, PT-06 y PT-07, a cargo de FEMSA). Si la regresión encuentra errores, sus correcciones se estiman y se suman aparte.</p>
 
   <section class="controls" aria-label="Supuestos del cálculo">
+    <form autocomplete="off" style="display:contents" onsubmit="return false">
     <label for="start">Inicio del plan<input type="date" id="start" value="2026-11-26"></label>
     <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1" selected>1 desarrollador</option><option value="2">2 desarrolladores</option></select></label>
     <label for="start2" id="lbl-start2" hidden>Se suma el desarrollador 2<input type="date" id="start2"></label>
+    </form>
     <div class="rule">1 SP = 4 horas · 1 día = 8 horas · 1 SP = medio día</div>
     <div class="legend">
       <span><i style="background:var(--dev)"></i>Desarrollo</span>
@@ -365,6 +367,8 @@ gEl.addEventListener('click',e=>{const b=e.target.closest('[data-tip]');if(b)sho
 document.querySelector('.gantt-box').addEventListener('scroll',hideTip,{passive:true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip()});
 document.getElementById('devs').addEventListener('change',render);
+document.getElementById('devs').addEventListener('input',render);
+window.addEventListener('pageshow',render);
 document.getElementById('start').addEventListener('change',render);
 document.getElementById('start2').addEventListener('change',render);
 render();
