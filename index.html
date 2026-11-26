@@ -296,7 +296,7 @@ function render(){
   document.getElementById('k-dias').textContent=(s.total/2).toLocaleString('es-CL');
   document.getElementById('k-horas').textContent=sp*4;
   document.getElementById('k-sp').textContent=sp;
-  document.getElementById('k-fin').textContent=fmt(days[totalDays-1])+' '+days[totalDays-1].getFullYear();
+  document.getElementById('k-fin').textContent=fmt(days[totalDays-1]);
   const m1=dayOf(s.ms.e1),m9=dayOf(s.ms.e9);
   document.getElementById('k-ms1').textContent=fmt(m1);
   document.getElementById('k-ms').textContent=fmt(m9);
