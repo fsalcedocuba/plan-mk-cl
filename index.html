@@ -134,7 +134,7 @@ footer{font-size:12.5px;color:var(--muted)}
     <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1" selected>1 desarrollador</option><option value="2">2 desarrolladores</option></select></label>
     <label for="start2" id="lbl-start2" hidden>Se suma el desarrollador 2<input type="date" id="start2"></label>
     </form>
-    <div class="rule">1 SP = 4 horas · 1 día = 8 horas · 1 SP = medio día</div>
+    <div class="rule">1 SP = 4 horas · jornada de 8 horas = 7 horas efectivas de desarrollo + 1 hora de reuniones y validaciones</div>
     <div class="legend">
       <span><i style="background:var(--dev)"></i>Desarrollo</span>
       <span><i style="background:var(--navy)"></i>Conector (fuera de las etapas)</span>
@@ -182,6 +182,7 @@ footer{font-size:12.5px;color:var(--muted)}
         <li>Los story points son los cargados en cada ticket de Jira (revisado el 26-11-2026).</li>
         <li>Se planifican solo los tickets abiertos que quedan visibles con los filtros de la hoja. Los cerrados no suman tiempo.</li>
         <li>Se descuentan fines de semana y feriados de Chile (8 y 9 dic, 25 dic y 1 ene).</li>
+        <li>Cada desarrollador hace 7 horas efectivas de desarrollo por día: de su jornada de 8 horas, 1 hora se va en reuniones, validaciones y otras tareas.</li>
         <li>Los tiempos son de desarrollo. No incluyen esperas de terceros (Kognivera, FEMSA, conector) ni la regresión de FEMSA.</li>
         <li>No incluye correcciones posteriores a la regresión en la versión 22.7. Se estiman cuando FEMSA entregue sus resultados.</li>
         <li>SF-14c (SCC-1616) y SF-43 (SCC-1621) quedaron fuera del filtro, pero PT-10, SF-06 y SF-36a dependen de ellos. Se asume que estarán listos cuando empiece la fase 2.</li>
@@ -269,17 +270,21 @@ function workDays(start,count){const out=[];const d=new Date(start+'T12:00:00');
 // días hábiles desde start (incluido) hasta date (excluido)
 function workDaysBetween(start,date){let n=0;const d=new Date(start+'T12:00:00'),e=new Date(date+'T12:00:00');while(d<e){const w=d.getDay();if(w&&w!==6&&!HOLI.has(iso(d)))n++;d.setDate(d.getDate()+1)}return n}
 function fmt(d){return d.getDate()+' '+MON[d.getMonth()]}
-// feriados en día de semana que caen entre dos días hábiles del plan: u = unidad (medio día) donde se dibujan
-function holiGaps(span,days){const out=[];for(let i=1;2*i<=span-2&&days[i];i++){const hs=[];const d=new Date(days[i-1]);d.setDate(d.getDate()+1);while(d<days[i]){const w=d.getDay();if(w&&w!==6&&HOLI.has(iso(d)))hs.push(new Date(d));d.setDate(d.getDate()+1)}if(hs.length)out.push({u:2*i,hs,txt:holiTxt(hs)})}return out}
+// feriados en día de semana que caen entre dos días hábiles del plan: u = hora efectiva donde se dibujan
+function holiGaps(span,days){const out=[];for(let i=1;HPD*i<=span-HPD&&days[i];i++){const hs=[];const d=new Date(days[i-1]);d.setDate(d.getDate()+1);while(d<days[i]){const w=d.getDay();if(w&&w!==6&&HOLI.has(iso(d)))hs.push(new Date(d));d.setDate(d.getDate()+1)}if(hs.length)out.push({u:HPD*i,hs,txt:holiTxt(hs)})}return out}
 function holiTxt(hs){const m=MON[hs[hs.length-1].getMonth()];const n=hs.map(d=>d.getDate());return (n.length>1?n.slice(0,-1).join(', ')+' y '+n[n.length-1]:n[0])+' '+m}
 const WD=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const MONL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 function longDay(d){return WD[d.getDay()]+' '+d.getDate()+' de '+MONL[d.getMonth()]+' de '+d.getFullYear()}
 const work=t=>t.done||t.cond?0:t.sp;
+const HPD=7; // horas efectivas de desarrollo por día (jornada de 8 h menos 1 h de reuniones y validaciones)
+const HSP=4; // horas por story point
+const startTxt=u=>u%HPD?`tras ${u%HPD} h del día en el ticket anterior`:'al comienzo del día';
+const endTxt=u=>u%HPD?`con ${u%HPD} de ${HPD} h efectivas del día`:'al final del día';
 const stageNums=need=>need.map(x=>x.slice(1)).join(' y ');
 
-// unidades de medio día (1 SP = 4 h = 1 unidad). Los tickets se toman en el orden de las etapas.
-// offsets: unidad (medio día) desde el inicio del plan en que cada desarrollador queda disponible
+// unidades de hora efectiva (1 SP = 4 h; 1 día = HPD horas efectivas). Los tickets se toman en el orden de las etapas.
+// offsets: hora efectiva desde el inicio del plan en que cada desarrollador queda disponible
 function schedule(devs,offsets=[]){
   const end={},start={};const free=Array.from({length:devs},(_,i)=>offsets[i]||0);
   const delivery=STAGES.filter(x=>!x.plain).map(x=>x.id);
@@ -290,7 +295,7 @@ function schedule(devs,offsets=[]){
       if(!work(t)){start[t.k]=end[t.k]=earliest;continue}
       let best=0,bs=Infinity;
       free.forEach((f,i)=>{const s=Math.max(f,earliest);if(s<bs){bs=s;best=i}});
-      start[t.k]=bs;end[t.k]=bs+t.sp;free[best]=end[t.k];t.dev=best+1;
+      start[t.k]=bs;end[t.k]=bs+t.sp*HSP;free[best]=end[t.k];t.dev=best+1;
     }
   }
   // hito de cada etapa: terminan sus tickets y los de las etapas que necesita
@@ -312,26 +317,27 @@ function render(){
     document.getElementById('lbl-start'+n).hidden=devs<n;
     if(!inp.value||inp.value<startDate)inp.value=startDate;
     inp.min=startDate;
-    if(devs>=n)offsets.push(2*workDaysBetween(startDate,inp.value));
+    if(devs>=n)offsets.push(HPD*workDaysBetween(startDate,inp.value));
   }
   const s=schedule(devs,offsets);
-  const totalDays=Math.ceil(s.total/2);
+  const totalDays=Math.ceil(s.total/HPD);
   const days=workDays(startDate,totalDays+12);
-  const dayOf=u=>days[Math.max(0,Math.ceil(u/2)-1)];
+  const dayOf=u=>days[Math.max(0,Math.ceil(u/HPD)-1)];
+  const dayAt=u=>days[Math.floor(u/HPD)];
   const sp=T.reduce((a,t)=>a+work(t),0);
-  document.getElementById('k-dias').textContent=(s.total/2).toLocaleString('es-CL');
+  document.getElementById('k-dias').textContent=(Math.round(s.total/HPD*10)/10).toLocaleString('es-CL');
   document.getElementById('k-horas').textContent=sp*4;
   document.getElementById('k-sp').textContent=sp;
   document.getElementById('k-fin').textContent=fmt(days[totalDays-1]);
   const m1=dayOf(s.ms.e1),m9=dayOf(s.ms.e9);
   document.getElementById('k-ms1').textContent=fmt(m1);
   document.getElementById('k-ms').textContent=fmt(m9);
-  const span=s.total+2;
+  const span=totalDays*HPD+HPD;
   const pct=u=>(u/span*100);
   const g=document.getElementById('gantt');
   let h='<div class="g-label g-head" style="justify-content:end"><span class="meta">Ticket · SP · horas · fechas</span></div><div class="g-head"><div class="weeks">';
   const monSoon=[1,2].some(k=>days[k]&&days[k].getDay()===1);
-  for(let u=0;u<span;u+=2){const d=days[u/2];if(!d)break;if(d.getDay()===1||(u===0&&!monSoon)){h+=`<div class="wk" style="left:${pct(u)}%"><b>Sem. ${fmt(d)}</b>${d.getFullYear()}</div>`}}
+  for(let u=0;u<span;u+=HPD){const d=days[u/HPD];if(!d)break;if(d.getDay()===1||(u===0&&!monSoon)){h+=`<div class="wk" style="left:${pct(u)}%"><b>Sem. ${fmt(d)}</b>${d.getFullYear()}</div>`}}
   const gaps=holiGaps(span,days);
   for(const g of gaps)h+=`<div class="holi-h" style="left:${pct(g.u)}%" title="Feriado: ${g.hs.map(longDay).join(' y ')}. No se trabaja.">Feriado ${g.txt}</div>`;
   h+='</div></div>';
@@ -340,7 +346,7 @@ function render(){
     const tw=ts.filter(work);
     const spS=tw.reduce((x,t)=>x+t.sp,0);
     let range='';
-    if(tw.length){const a=Math.min(...tw.map(t=>s.start[t.k])),b=Math.max(...tw.map(t=>s.end[t.k]));range=` · ${fmt(days[Math.floor(a/2)])} al ${fmt(dayOf(b))}`}
+    if(tw.length){const a=Math.min(...tw.map(t=>s.start[t.k])),b=Math.max(...tw.map(t=>s.end[t.k]));range=` · ${fmt(dayAt(a))} al ${fmt(dayOf(b))}`}
     let mix='';
     if(stg.id==='f2'){mix=' · '+['dev','conf','def'].map(n=>{const x=ts.filter(t=>t.nat===n);return `${NAT[n]}: ${x.length} (${x.reduce((a,t)=>a+t.sp,0)*4} h)`}).join(' · ')}
     const title=stg.plain?stg.name:`Etapa ${stg.n} · ${stg.name}`;
@@ -355,19 +361,19 @@ function render(){
       if(!work(t)){
         const at=s.ms[stg.id];
         h+=`<div class="g-label" tabindex="0" data-tip="${ltip}">${head}<span class="meta">${t.done?t.sp+' SP · terminado, no suma tiempo':'No suma al total hasta estimarse'}</span></div>`;
-        h+=`<div class="g-track">${gridlines(span,days)}${t.cond?`<div class="bar cond" style="left:${pct(at)}%;width:${pct(Math.min(2,span-at))}%">¿+ días?</div>`:''}</div>`;
+        h+=`<div class="g-track">${gridlines(span,days)}${t.cond?`<div class="bar cond" style="left:${pct(at)}%;width:${pct(Math.min(HPD,span-at))}%">¿+ días?</div>`:''}</div>`;
         continue;
       }
       const st=s.start[t.k],en=s.end[t.k];
-      const dA=days[Math.floor(st/2)],dB=dayOf(en);
+      const dA=dayAt(st),dB=dayOf(en);
       h+=`<div class="g-label" tabindex="0" data-tip="${ltip}">${head}<span class="meta">${t.sp} SP · ${t.sp*4} h · ${fmt(dA)}${+dA!==+dB?' – '+fmt(dB):''}</span></div>`;
-      const tip=`<b>${t.k} · ${t.n}</b>${dsc||'<br>'}Empieza: ${longDay(dA)}, ${st%2?'desde mediodía':'en la mañana'}<br>Termina: <b>${longDay(dB)}, ${en%2?'a mediodía':'al final del día'}</b><br>${t.sp} SP · ${t.sp*4} h${devs>1?' · Dev '+t.dev:''}${gaps.filter(g=>g.u>st&&g.u<en).map(g=>'<br>No se trabaja el feriado '+g.txt).join('')}`;
-      h+=`<div class="g-track">${gridlines(span,days)}<div class="bar ${t.kind}" tabindex="0" data-tip="${tip.replace(/"/g,'&quot;')}" style="left:${pct(st)}%;width:${pct(t.sp)}%">${t.sp*4} h</div></div>`;
+      const tip=`<b>${t.k} · ${t.n}</b>${dsc||'<br>'}Empieza: ${longDay(dA)}, ${startTxt(st)}<br>Termina: <b>${longDay(dB)}, ${endTxt(en)}</b><br>${t.sp} SP · ${t.sp*4} h${devs>1?' · Dev '+t.dev:''}${gaps.filter(g=>g.u>st&&g.u<en).map(g=>'<br>No se trabaja el feriado '+g.txt).join('')}`;
+      h+=`<div class="g-track">${gridlines(span,days)}<div class="bar ${t.kind}" tabindex="0" data-tip="${tip.replace(/"/g,'&quot;')}" style="left:${pct(st)}%;width:${pct(t.sp*HSP)}%">${t.sp*4} h</div></div>`;
     }
     if(!stg.plain){
       const u=s.ms[stg.id],d=dayOf(u);
       const msName=`Término de etapa ${stg.n} · ${stg.name}`;
-      const msTip=`<b>Hito · ${msName}</b><br>Se entrega al equipo headless: ${stg.what.charAt(0).toLowerCase()+stg.what.slice(1)}.<br>Endpoints: ${stg.ep}<br>Fecha: <b>${longDay(d)}, ${u%2?'a mediodía':'al final del día'}</b>${stg.need.length?'<br>Incluye terminadas las etapas '+stageNums(stg.need):''}`;
+      const msTip=`<b>Hito · ${msName}</b><br>Se entrega al equipo headless: ${stg.what.charAt(0).toLowerCase()+stg.what.slice(1)}.<br>Endpoints: ${stg.ep}<br>Fecha: <b>${longDay(d)}, ${endTxt(u)}</b>${stg.need.length?'<br>Incluye terminadas las etapas '+stageNums(stg.need):''}`;
       const right=pct(u)>60;
       h+=`<div class="g-label ms-label"><span class="k">HITO · entrega al equipo headless</span><span class="n" title="${msName}">${msName}</span><span class="meta">${longDay(d)}</span></div>`;
       h+=`<div class="g-track ms-track">${gridlines(span,days)}<div class="ms-line" style="left:${pct(u)}%"></div><div class="ms" tabindex="0" data-tip="${msTip.replace(/"/g,'&quot;')}" style="left:${pct(u)}%"></div><span class="ms-txt" style="${right?`right:calc(${100-pct(u)}% + 16px)`:`left:calc(${pct(u)}% + 16px)`}">${msName} · ${fmt(d)}</span></div>`;
@@ -376,7 +382,7 @@ function render(){
   g.innerHTML=h;
   document.getElementById('done').textContent='Ya terminados (no suman tiempo): '+DONE.join(', ')+'.';
 }
-function gridlines(span,days){let x='';for(let u=2;u<span;u+=2){const d=days[u/2];if(d&&d.getDay()===1)x+=`<div class="gridline" style="left:${u/span*100}%"></div>`}for(const g of holiGaps(span,days))x+=`<div class="holi-line" style="left:${g.u/span*100}%"></div>`;return x}
+function gridlines(span,days){let x='';for(let u=HPD;u<span;u+=HPD){const d=days[u/HPD];if(d&&d.getDay()===1)x+=`<div class="gridline" style="left:${u/span*100}%"></div>`}for(const g of holiGaps(span,days))x+=`<div class="holi-line" style="left:${g.u/span*100}%"></div>`;return x}
 const tipEl=document.getElementById('tip');
 function showTip(bar,x,y){
   tipEl.innerHTML=bar.dataset.tip;tipEl.hidden=false;
