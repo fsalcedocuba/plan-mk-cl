@@ -130,9 +130,9 @@ footer{font-size:12.5px;color:var(--muted)}
 
   <section class="controls" aria-label="Supuestos del cálculo">
     <form autocomplete="off" style="display:contents" onsubmit="return false">
-    <label for="start">Inicio del plan<input type="date" id="start" value="2026-11-26"></label>
-    <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1" selected>1 desarrollador</option><option value="2">2 desarrolladores</option></select></label>
-    <label for="start2" id="lbl-start2" hidden>Se suma el desarrollador 2<input type="date" id="start2"></label>
+    <label for="start">Inicio del plan<input type="date" id="start" value="2026-11-27"></label>
+    <label for="devs">Desarrolladores en paralelo<select id="devs"><option value="1">1 desarrollador</option><option value="2" selected>2 desarrolladores</option></select></label>
+    <label for="start2" id="lbl-start2">Se suma el desarrollador 2<input type="date" id="start2" value="2026-11-30"></label>
     </form>
     <div class="rule">1 SP = 4 horas · jornada de 8 horas = 7 horas efectivas de desarrollo + 1 hora de reuniones y validaciones</div>
     <div class="legend">
@@ -309,7 +309,7 @@ function schedule(devs,offsets=[]){
 
 function render(){
   const devs=+document.getElementById('devs').value;
-  const startDate=document.getElementById('start').value||'2026-11-26';
+  const startDate=document.getElementById('start').value||'2026-11-27';
   // fecha en que se suma cada desarrollador adicional (nunca antes del inicio del plan)
   const offsets=[0];
   for(const n of [2]){
