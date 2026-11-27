@@ -14,7 +14,7 @@
   --dev:#3f8f5a; --dev-soft:#e2efda;
   --maybe:#c4861d; --maybe-soft:#fbefd6;
   --cond:#7a5bb5; --cond-soft:#efe9f9;
-  --done:#9aa3b5;
+  --done:#9aa3b5; --holi:#c0392b; --holi-soft:#fbe5e2;
   --font-display:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
@@ -22,11 +22,11 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#10141f; --surface:#171c2a; --fg:#e7eaf2; --muted:#a0a8bb; --line:#2a3145; --grid:#20263a;
   --navy:#8fa9e0; --navy-soft:#1e2944; --dev:#6cc28a; --dev-soft:#1b3326; --maybe:#e5aa48; --maybe-soft:#3a2d14;
-  --cond:#b39be6; --cond-soft:#2c2442; --done:#5f6880; color-scheme:dark}}
+  --cond:#b39be6; --cond-soft:#2c2442; --done:#5f6880; --holi:#ef7b6c; --holi-soft:#3d1f1c; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#10141f; --surface:#171c2a; --fg:#e7eaf2; --muted:#a0a8bb; --line:#2a3145; --grid:#20263a;
   --navy:#8fa9e0; --navy-soft:#1e2944; --dev:#6cc28a; --dev-soft:#1b3326; --maybe:#e5aa48; --maybe-soft:#3a2d14;
-  --cond:#b39be6; --cond-soft:#2c2442; --done:#5f6880; color-scheme:dark}
+  --cond:#b39be6; --cond-soft:#2c2442; --done:#5f6880; --holi:#ef7b6c; --holi-soft:#3d1f1c; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.5}
 .wrap{max-width:1180px;margin:0 auto;padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
 header{display:grid;gap:10px}
@@ -66,10 +66,12 @@ p{margin:0;max-width:72ch}
 .g-stage{grid-column:1/-1;padding:12px 12px 8px;background:var(--bg);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
 .g-stage strong{font-size:14px}
 .g-stage span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.weeks{position:relative;height:44px;border-left:1px solid var(--line)}
+.weeks{position:relative;height:60px;border-left:1px solid var(--line)}
 .wk{position:absolute;top:0;bottom:0;border-left:1px solid var(--grid);padding:6px 6px 0;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden}
 .wk b{display:block;color:var(--fg);font-weight:600;font-size:12px}
 .gridline{position:absolute;top:0;bottom:0;border-left:1px solid var(--grid)}
+.holi-line{position:absolute;top:0;bottom:0;width:6px;transform:translateX(-3px);background:repeating-linear-gradient(135deg,var(--holi) 0 2px,transparent 2px 4px);opacity:.85;pointer-events:none}
+.holi-h{position:absolute;bottom:4px;transform:translateX(-50%);font-size:11px;font-weight:600;color:var(--holi);background:var(--holi-soft);border:1px solid var(--holi);border-radius:10px;padding:0 6px;white-space:nowrap;cursor:help;z-index:1}
 .bar{position:absolute;top:13px;height:26px;border-radius:5px;display:flex;align-items:center;padding:0 7px;font-size:12px;font-weight:600;color:var(--surface);white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
 .bar.dev{background:var(--dev)} .bar.maybe{background:var(--maybe)} .bar.core{background:var(--navy)}
 .bar.cond{background:var(--cond-soft);color:var(--cond);border:1.5px dashed var(--cond)}
@@ -82,7 +84,7 @@ p{margin:0;max-width:72ch}
 .ms-line{position:absolute;top:0;bottom:0;border-left:2px dashed var(--navy)}
 .ms{position:absolute;top:50%;width:16px;height:16px;background:var(--navy);transform:translate(-50%,-50%) rotate(45deg);border-radius:2px;cursor:pointer}
 .ms:hover,.ms:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
-.ms-txt{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
+.ms-txt{position:absolute;z-index:1;top:50%;transform:translateY(-50%);background:var(--navy-soft);padding:0 4px;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap}
 .kpi.ms-kpi{border-color:var(--navy);border-width:2px}
 .tip{position:fixed;z-index:20;max-width:380px;background:var(--fg);color:var(--bg);border-radius:6px;padding:8px 11px;font-size:13px;line-height:1.45;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:1px}
@@ -139,6 +141,7 @@ footer{font-size:12.5px;color:var(--muted)}
       <span><i style="background:var(--maybe)"></i>Puede terminar en desarrollo</span>
       <span><i style="background:var(--cond-soft);border:1.5px dashed var(--cond)"></i>Condicional, por estimar</span>
       <span><i style="background:var(--navy);width:10px;height:10px;transform:rotate(45deg)"></i>Hito: término de etapa</span>
+      <span><i style="background:repeating-linear-gradient(135deg,var(--holi) 0 2px,transparent 2px 4px);border:1px solid var(--holi)"></i>Feriado (no se trabaja)</span>
     </div>
   </section>
 
@@ -178,7 +181,7 @@ footer{font-size:12.5px;color:var(--muted)}
       <ul>
         <li>Los story points son los cargados en cada ticket de Jira (revisado el 26-11-2026).</li>
         <li>Se planifican solo los tickets abiertos que quedan visibles con los filtros de la hoja. Los cerrados no suman tiempo.</li>
-        <li>Se descuentan fines de semana y feriados de Chile (8 dic, 25 dic y 1 ene).</li>
+        <li>Se descuentan fines de semana y feriados de Chile (8 y 9 dic, 25 dic y 1 ene).</li>
         <li>Los tiempos son de desarrollo. No incluyen esperas de terceros (Kognivera, FEMSA, conector) ni la regresión de FEMSA.</li>
         <li>No incluye correcciones posteriores a la regresión en la versión 22.7. Se estiman cuando FEMSA entregue sus resultados.</li>
         <li>SF-14c (SCC-1616) y SF-43 (SCC-1621) quedaron fuera del filtro, pero PT-10, SF-06 y SF-36a dependen de ellos. Se asume que estarán listos cuando empiece la fase 2.</li>
@@ -258,7 +261,7 @@ const DESC={
 };
 const NAT={dev:'Desarrollo',conf:'Configuración',def:'Definición'};
 const DONE=['SCC-1584 SF-01','SCC-1587 SF-03','SCC-1592 PT-03a','SCC-1597 SF-07','SCC-1643 base del cartucho app_chile_marketplace'];
-const HOLI=new Set(['2026-12-08','2026-12-25','2027-01-01','2027-05-01','2027-05-21']);
+const HOLI=new Set(['2026-12-08','2026-12-09','2026-12-25','2027-01-01','2027-05-01','2027-05-21']);
 const MON=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -266,6 +269,9 @@ function workDays(start,count){const out=[];const d=new Date(start+'T12:00:00');
 // días hábiles desde start (incluido) hasta date (excluido)
 function workDaysBetween(start,date){let n=0;const d=new Date(start+'T12:00:00'),e=new Date(date+'T12:00:00');while(d<e){const w=d.getDay();if(w&&w!==6&&!HOLI.has(iso(d)))n++;d.setDate(d.getDate()+1)}return n}
 function fmt(d){return d.getDate()+' '+MON[d.getMonth()]}
+// feriados en día de semana que caen entre dos días hábiles del plan: u = unidad (medio día) donde se dibujan
+function holiGaps(span,days){const out=[];for(let i=1;2*i<=span-2&&days[i];i++){const hs=[];const d=new Date(days[i-1]);d.setDate(d.getDate()+1);while(d<days[i]){const w=d.getDay();if(w&&w!==6&&HOLI.has(iso(d)))hs.push(new Date(d));d.setDate(d.getDate()+1)}if(hs.length)out.push({u:2*i,hs,txt:holiTxt(hs)})}return out}
+function holiTxt(hs){const m=MON[hs[hs.length-1].getMonth()];const n=hs.map(d=>d.getDate());return (n.length>1?n.slice(0,-1).join(', ')+' y '+n[n.length-1]:n[0])+' '+m}
 const WD=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const MONL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 function longDay(d){return WD[d.getDay()]+' '+d.getDate()+' de '+MONL[d.getMonth()]+' de '+d.getFullYear()}
@@ -326,6 +332,8 @@ function render(){
   let h='<div class="g-label g-head" style="justify-content:end"><span class="meta">Ticket · SP · horas · fechas</span></div><div class="g-head"><div class="weeks">';
   const monSoon=[1,2].some(k=>days[k]&&days[k].getDay()===1);
   for(let u=0;u<span;u+=2){const d=days[u/2];if(!d)break;if(d.getDay()===1||(u===0&&!monSoon)){h+=`<div class="wk" style="left:${pct(u)}%"><b>Sem. ${fmt(d)}</b>${d.getFullYear()}</div>`}}
+  const gaps=holiGaps(span,days);
+  for(const g of gaps)h+=`<div class="holi-h" style="left:${pct(g.u)}%" title="Feriado: ${g.hs.map(longDay).join(' y ')}. No se trabaja.">Feriado ${g.txt}</div>`;
   h+='</div></div>';
   for(const stg of STAGES){
     const ts=T.filter(t=>t.st===stg.id);
@@ -353,7 +361,7 @@ function render(){
       const st=s.start[t.k],en=s.end[t.k];
       const dA=days[Math.floor(st/2)],dB=dayOf(en);
       h+=`<div class="g-label" tabindex="0" data-tip="${ltip}">${head}<span class="meta">${t.sp} SP · ${t.sp*4} h · ${fmt(dA)}${+dA!==+dB?' – '+fmt(dB):''}</span></div>`;
-      const tip=`<b>${t.k} · ${t.n}</b>${dsc||'<br>'}Empieza: ${longDay(dA)}, ${st%2?'desde mediodía':'en la mañana'}<br>Termina: <b>${longDay(dB)}, ${en%2?'a mediodía':'al final del día'}</b><br>${t.sp} SP · ${t.sp*4} h${devs>1?' · Dev '+t.dev:''}`;
+      const tip=`<b>${t.k} · ${t.n}</b>${dsc||'<br>'}Empieza: ${longDay(dA)}, ${st%2?'desde mediodía':'en la mañana'}<br>Termina: <b>${longDay(dB)}, ${en%2?'a mediodía':'al final del día'}</b><br>${t.sp} SP · ${t.sp*4} h${devs>1?' · Dev '+t.dev:''}${gaps.filter(g=>g.u>st&&g.u<en).map(g=>'<br>No se trabaja el feriado '+g.txt).join('')}`;
       h+=`<div class="g-track">${gridlines(span,days)}<div class="bar ${t.kind}" tabindex="0" data-tip="${tip.replace(/"/g,'&quot;')}" style="left:${pct(st)}%;width:${pct(t.sp)}%">${t.sp*4} h</div></div>`;
     }
     if(!stg.plain){
@@ -368,7 +376,7 @@ function render(){
   g.innerHTML=h;
   document.getElementById('done').textContent='Ya terminados (no suman tiempo): '+DONE.join(', ')+'.';
 }
-function gridlines(span,days){let x='';for(let u=2;u<span;u+=2){const d=days[u/2];if(d&&d.getDay()===1)x+=`<div class="gridline" style="left:${u/span*100}%"></div>`}return x}
+function gridlines(span,days){let x='';for(let u=2;u<span;u+=2){const d=days[u/2];if(d&&d.getDay()===1)x+=`<div class="gridline" style="left:${u/span*100}%"></div>`}for(const g of holiGaps(span,days))x+=`<div class="holi-line" style="left:${g.u/span*100}%"></div>`;return x}
 const tipEl=document.getElementById('tip');
 function showTip(bar,x,y){
   tipEl.innerHTML=bar.dataset.tip;tipEl.hidden=false;
